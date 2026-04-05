@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hikes & Trail Runs — Trailhead</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-hikes">
+  <header>
+    <div class="header-inner">
+      <a href="index.html" class="back-btn">←</a>
+      <div class="header-text">
+        <div class="logo">🥾 Hikes & trail runs</div>
+      </div>
+      <span class="header-count" id="page-count"></span>
+    </div>
+  </header>
+  <main>
+    <div id="hikes-map" class="overview-map"></div>
+    <div class="filter-bar">
+      <span class="filter-label">Difficulty</span>
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="easy">Easy</button>
+      <button class="filter-btn" data-filter="medium">Medium</button>
+      <button class="filter-btn" data-filter="hard">Hard</button>
+    </div>
+    <div class="items-list" id="items-list"></div>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="data.js"></script>   <!-- data always loads first -->
+  <script src="app.js"></script>    <!-- logic loads second -->
+</body>
+</html>

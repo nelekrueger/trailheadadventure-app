@@ -4,23 +4,88 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Trailhead</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #f4f1e8;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-    h1 {
-      font-size: 2.5rem;
-      color: #2d4a2d;
-    }
-  </style>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>⛰️ Trailhead is coming</h1>
+
+  <!-- ── HEADER ──────────────────────────────────────────────
+       Shown on the home page only.
+       Sub-pages have their own header with a back button.
+  ──────────────────────────────────────────────────────── -->
+  <header>
+    <div class="header-inner">
+      <div class="logo">⛰️ Trailhead</div>
+      <p class="tagline">Handpicked routes, camps and places in the wild</p>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ── MAP SECTION ───────────────────────────────────────
+         Full-width map showing all four categories at once.
+         Filter buttons above toggle each layer on/off.
+    ──────────────────────────────────────────────────────── -->
+    <section class="map-section">
+
+      <!-- Filter toggle buttons — one per category.
+           data-category must match the keys in app.js layers object -->
+      <div class="filter-bar">
+        <button class="filter-btn active" data-category="hikes">🥾 Hikes & runs</button>
+        <button class="filter-btn active" data-category="bikes">🚵 Bike routes</button>
+        <button class="filter-btn active" data-category="cafes">🍴 Cafes & food</button>
+        <button class="filter-btn active" data-category="camps">⛺ Camps</button>
+      </div>
+
+      <!-- Map renders into this div via Leaflet in app.js buildHomePage() -->
+      <div id="map"></div>
+
+    </section>
+
+    <!-- ── CATEGORY CARDS ─────────────────────────────────────
+         Four clickable cards linking to each sub-page.
+         Counts are filled in by app.js buildHomePage().
+    ──────────────────────────────────────────────────────── -->
+    <section class="categories-section">
+      <h2>Browse by category</h2>
+      <div class="category-grid">
+
+        <a href="hikes.html" class="category-card hikes">
+          <span class="cat-icon">🥾</span>
+          <span class="cat-name">Hikes & trail runs</span>
+          <span class="cat-count" id="count-hikes">— routes</span>
+        </a>
+
+        <a href="bikes.html" class="category-card bikes">
+          <span class="cat-icon">🚵</span>
+          <span class="cat-name">Bike routes</span>
+          <span class="cat-count" id="count-bikes">— routes</span>
+        </a>
+
+        <a href="cafes.html" class="category-card cafes">
+          <span class="cat-icon">🍴</span>
+          <span class="cat-name">Cafes & restaurants</span>
+          <span class="cat-count" id="count-cafes">— places</span>
+        </a>
+
+        <a href="camps.html" class="category-card camps">
+          <span class="cat-icon">⛺</span>
+          <span class="cat-name">Camps & shelters</span>
+          <span class="cat-count" id="count-camps">— spots</span>
+        </a>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Scripts load in this order:
+       1. Leaflet (map library, must be before app.js)
+       2. data.js (all content — must be before app.js)
+       3. app.js (all logic — reads from data.js) -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+
 </body>
 </html>
