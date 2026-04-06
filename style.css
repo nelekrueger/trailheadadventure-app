@@ -1,18 +1,50 @@
-*, *::before, *::after {
+/* ============================================================
+   style.css — Trailhead app styles
+   Palette: warm earthy neutrals, muted nature tones
+   Icons: Phosphor Icons (ph-light weight throughout)
+   ============================================================ */
+
+   *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
   }
   
-  body {
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    background: #f4f1e8;
-    color: #1e1e16;
+  /* ── DESIGN TOKENS ───────────────────────────────────────────
+     Change colours here to update the whole app at once       */
+  :root {
+    --hike:      #6b7c5e;   /* muted sage green */
+    --bike:      #6b7870;   /* muted slate grey-green */
+    --cafe:      #9c7d58;   /* warm tan */
+    --camp:      #8c6e58;   /* earthy terracotta */
+  
+    --bg:        #f7f4ee;   /* warm off-white page background */
+    --surface:   #f0ece0;   /* card/section background */
+    --border:    #dedad0;   /* subtle border */
+    --ink:       #2c2c24;   /* primary text */
+    --muted:     #8c8878;   /* secondary text */
+    --header-bg: #2e3028;   /* near-black header */
+    --header-fg: #e8e4d8;   /* warm off-white on dark */
+    --header-muted: #9a9880; /* muted text on dark header */
   }
   
-  /* ── HEADER ── */
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  
+  /* ── PHOSPHOR ICON DEFAULTS ──────────────────────────────────
+     All icons use light weight — organic, not heavy            */
+  .ph-light {
+    vertical-align: -0.15em;
+  }
+  
+  /* ── HEADER ─────────────────────────────────────────────────
+     Shared across all pages. Sub-pages add a back button      */
   header {
-    background: #2d4a2d;
+    background: var(--header-bg);
     padding: 1rem 1.5rem;
     position: sticky;
     top: 0;
@@ -28,39 +60,46 @@
   }
   
   .back-btn {
-    color: #a8c5a0;
+    color: var(--header-muted);
     text-decoration: none;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     line-height: 1;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    transition: color 0.15s;
   }
   
-  .back-btn:hover { color: white; }
+  .back-btn:hover { color: var(--header-fg); }
   
   .header-text { flex: 1; }
   
   .logo {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #f4f1e8;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--header-fg);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    letter-spacing: -0.01em;
   }
   
   .tagline {
-    font-size: 0.8rem;
-    color: #a8c5a0;
-    margin-top: 0.1rem;
+    font-size: 0.78rem;
+    color: var(--header-muted);
+    margin-top: 0.15rem;
   }
   
   .header-count {
-    font-size: 0.8rem;
-    color: #a8c5a0;
-    background: rgba(255,255,255,0.1);
-    padding: 0.25rem 0.7rem;
+    font-size: 0.75rem;
+    color: var(--header-muted);
+    background: rgba(255,255,255,0.08);
+    padding: 0.2rem 0.65rem;
     border-radius: 999px;
     white-space: nowrap;
   }
   
-  /* ── MAIN LAYOUT ── */
+  /* ── MAIN LAYOUT ─────────────────────────────────────────────*/
   main {
     max-width: 900px;
     margin: 0 auto;
@@ -70,16 +109,17 @@
     gap: 1.5rem;
   }
   
-  /* ── OVERVIEW MAP ── */
-  .overview-map {
+  /* ── HOME MAP ────────────────────────────────────────────────*/
+  #map {
     width: 100%;
-    height: 260px;
-    border-radius: 12px;
-    border: 1px solid #ccc8b4;
+    height: 420px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
     overflow: hidden;
   }
   
-  /* ── FILTER BAR ── */
+  /* ── FILTER BAR ─────────────────────────────────────────────
+     Used on list pages and home page                          */
   .filter-bar {
     display: flex;
     flex-wrap: wrap;
@@ -88,92 +128,160 @@
   }
   
   .filter-label {
-    font-size: 0.78rem;
-    color: #888;
+    font-size: 0.72rem;
+    color: var(--muted);
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-right: 0.25rem;
+    letter-spacing: 0.06em;
   }
   
   .filter-btn {
-    padding: 0.35rem 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.35rem 0.85rem;
     border-radius: 999px;
-    border: 2px solid #ccc8b4;
+    border: 1.5px solid var(--border);
     font-size: 0.78rem;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
     background: white;
-    color: #666;
+    color: var(--muted);
     transition: all 0.15s;
   }
   
   .filter-btn:hover {
-    border-color: #888;
-    color: #333;
+    border-color: var(--muted);
+    color: var(--ink);
   }
   
+  /* Active state — colour per category page */
   .filter-btn.active {
     border-color: transparent;
     color: white;
   }
   
-  /* Active colours per category page */
-  body.page-hikes .filter-btn.active  { background: #2d6a2d; }
-  body.page-bikes .filter-btn.active  { background: #1a6e6e; }
-  body.page-cafes .filter-btn.active  { background: #b87a00; }
-  body.page-camps .filter-btn.active  { background: #c0440a; }
+  body.page-hikes .filter-btn.active,
+  .map-section .filter-btn.active[data-category="hikes"] { background: var(--hike); }
   
-  /* ── ITEMS LIST ── */
+  body.page-bikes .filter-btn.active,
+  .map-section .filter-btn.active[data-category="bikes"] { background: var(--bike); }
+  
+  body.page-cafes .filter-btn.active,
+  .map-section .filter-btn.active[data-category="cafes"] { background: var(--cafe); }
+  
+  body.page-camps .filter-btn.active,
+  .map-section .filter-btn.active[data-category="camps"] { background: var(--camp); }
+  
+  /* ── OVERVIEW MAP (sub-pages) ────────────────────────────────*/
+  .overview-map {
+    width: 100%;
+    height: 240px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  
+  /* ── CATEGORY GRID (home page) ───────────────────────────────*/
+  .categories-section h2 {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.85rem;
+  }
+  
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  
+  @media (min-width: 560px) {
+    .category-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+  
+  .category-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1.4rem 0.75rem;
+    border-radius: 10px;
+    text-decoration: none;
+    color: white;
+    transition: transform 0.15s, box-shadow 0.15s;
+    text-align: center;
+    border: 1.5px solid transparent;
+  }
+  
+  .category-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  }
+  
+  .category-card.hikes { background: var(--hike); }
+  .category-card.bikes { background: var(--bike); }
+  .category-card.cafes { background: var(--cafe); }
+  .category-card.camps { background: var(--camp); }
+  
+  .cat-icon  { font-size: 1.6rem; opacity: 0.95; }
+  .cat-name  { font-size: 0.82rem; font-weight: 600; }
+  .cat-count { font-size: 0.72rem; opacity: 0.75; }
+  
+  /* ── LIST PAGE: ITEMS ────────────────────────────────────────*/
   .items-list {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.65rem;
   }
   
   .no-results {
     text-align: center;
     padding: 2rem;
-    color: #888;
-    font-size: 0.9rem;
+    color: var(--muted);
+    font-size: 0.88rem;
   }
   
-  /* ── ROUTE CARD (hikes + bikes) ── */
+  /* ── ROUTE CARD (hikes + bikes) ──────────────────────────────*/
   .route-card {
-    background: white;
-    border-radius: 12px;
-    border: 1px solid #e0ddd0;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
     display: flex;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    overflow: hidden;
     text-decoration: none;
     color: inherit;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
   }
   
   .route-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.08);
   }
   
   .route-card.highlighted {
-    border-color: #2d6a2d;
-    box-shadow: 0 0 0 3px rgba(45,106,45,0.15);
+    border-color: var(--hike);
+    box-shadow: 0 0 0 3px rgba(107,124,94,0.15);
   }
   
   body.page-bikes .route-card.highlighted {
-    border-color: #1a6e6e;
-    box-shadow: 0 0 0 3px rgba(26,110,110,0.15);
+    border-color: var(--bike);
+    box-shadow: 0 0 0 3px rgba(107,120,112,0.15);
   }
   
+  /* Left thumbnail area */
   .route-card-image {
-    width: 110px;
-    min-width: 110px;
-    background: #ddd8c4;
+    width: 100px;
+    min-width: 100px;
+    background: var(--surface);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.5rem;
+    font-size: 1.8rem;
+    color: var(--muted);
   }
   
   .route-card-image img {
@@ -183,7 +291,7 @@
   }
   
   .route-card-body {
-    padding: 0.85rem 1rem;
+    padding: 0.8rem 1rem;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -191,17 +299,17 @@
   }
   
   .route-card-title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #1e1e16;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--ink);
   }
   
   .route-card-stats {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
-    font-size: 0.8rem;
-    color: #555;
+    gap: 0.65rem;
+    font-size: 0.78rem;
+    color: var(--muted);
   }
   
   .stat {
@@ -210,412 +318,270 @@
     gap: 0.25rem;
   }
   
-  .route-card-desc {
-    font-size: 0.8rem;
-    color: #777;
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
   .route-card-badges {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem;
-    margin-top: 0.2rem;
+    gap: 0.35rem;
+    margin-top: 0.1rem;
   }
   
-  /* ── PLACE CARD (cafes) ── */
-  .place-card {
-    background: white;
-    border-radius: 12px;
-    border: 1px solid #e0ddd0;
+  .route-card-desc {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  
+  /* ── PLACE CARD (cafes) ──────────────────────────────────────*/
+  .place-card {
     display: flex;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    overflow: hidden;
     text-decoration: none;
     color: inherit;
+    transition: transform 0.15s, box-shadow 0.15s;
   }
   
   .place-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.08);
   }
   
   .place-card.highlighted {
-    border-color: #b87a00;
-    box-shadow: 0 0 0 3px rgba(184,122,0,0.15);
+    border-color: var(--cafe);
+    box-shadow: 0 0 0 3px rgba(156,125,88,0.15);
   }
   
   .place-card-image {
-    width: 110px;
-    min-width: 110px;
-    background: #f5e8c0;
+    width: 100px;
+    min-width: 100px;
+    background: var(--surface);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.5rem;
+    font-size: 1.8rem;
+    color: var(--muted);
   }
   
-  .place-card-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
+  .place-card-image img { width: 100%; height: 100%; object-fit: cover; }
   
   .place-card-body {
-    padding: 0.85rem 1rem;
+    padding: 0.8rem 1rem;
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
   }
   
-  .place-card-title {
-    font-size: 1rem;
-    font-weight: 700;
-  }
+  .place-card-title  { font-size: 0.95rem; font-weight: 600; }
+  .place-card-desc   { font-size: 0.78rem; color: var(--muted); line-height: 1.45; }
+  .place-card-meta   { font-size: 0.75rem; color: var(--muted); }
   
-  .place-card-desc {
-    font-size: 0.8rem;
-    color: #777;
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  .place-card-meta {
-    font-size: 0.78rem;
-    color: #888;
-  }
-  
-  /* ── CAMP CARD ── */
+  /* ── CAMP CARD ───────────────────────────────────────────────*/
   .camp-card {
-    background: white;
-    border-radius: 12px;
-    border: 1px solid #e0ddd0;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
     display: flex;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    overflow: hidden;
     text-decoration: none;
     color: inherit;
+    transition: transform 0.15s, box-shadow 0.15s;
   }
   
   .camp-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.08);
   }
   
   .camp-card.highlighted {
-    border-color: #c0440a;
-    box-shadow: 0 0 0 3px rgba(192,68,10,0.15);
+    border-color: var(--camp);
+    box-shadow: 0 0 0 3px rgba(140,110,88,0.15);
   }
   
   .camp-card-image {
-    width: 110px;
-    min-width: 110px;
-    background: #f0ddd0;
+    width: 100px;
+    min-width: 100px;
+    background: var(--surface);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.5rem;
+    font-size: 1.8rem;
+    color: var(--muted);
   }
   
-  .camp-card-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
+  .camp-card-image img { width: 100%; height: 100%; object-fit: cover; }
   
   .camp-card-body {
-    padding: 0.85rem 1rem;
+    padding: 0.8rem 1rem;
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
   }
   
-  .camp-card-title {
-    font-size: 1rem;
-    font-weight: 700;
-  }
+  .camp-card-title       { font-size: 0.95rem; font-weight: 600; }
+  .camp-card-desc        { font-size: 0.78rem; color: var(--muted); line-height: 1.45; }
+  .camp-card-facilities  { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.1rem; }
   
-  .camp-card-desc {
-    font-size: 0.8rem;
-    color: #777;
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  .camp-card-facilities {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    margin-top: 0.2rem;
-  }
-  
-  /* ── BADGES ── */
+  /* ── BADGES ──────────────────────────────────────────────────*/
   .badge {
     display: inline-flex;
     align-items: center;
     gap: 0.2rem;
-    padding: 0.2rem 0.55rem;
+    padding: 0.18rem 0.55rem;
     border-radius: 999px;
-    font-size: 0.7rem;
-    font-weight: 700;
+    font-size: 0.68rem;
+    font-weight: 600;
     letter-spacing: 0.02em;
   }
   
-  .badge-easy     { background: #d4edda; color: #1a5c2a; }
-  .badge-medium   { background: #fff3cd; color: #7a5200; }
-  .badge-hard     { background: #fde8e8; color: #8b1a1a; }
-  .badge-official { background: #d6eaff; color: #0c3d7a; }
-  .badge-gpx      { background: #f0e6ff; color: #4a1a8a; }
-  .badge-type     { background: #f4f1e8; color: #555; border: 1px solid #ccc8b4; }
-  .badge-facility { background: #e8f4e8; color: #1a5c2a; }
+  .badge-easy     { background: #e8ede2; color: #3d5c30; }
+  .badge-medium   { background: #f0e8d8; color: #7a5200; }
+  .badge-hard     { background: #ede0dc; color: #7a3020; }
+  .badge-official { background: #dde8f0; color: #1a4a6e; }
+  .badge-gpx      { background: #e8e2f0; color: #4a3a6e; }
+  .badge-type     { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+  .badge-facility { background: #e8ede2; color: #3d5c30; }
   
-  /* ── HOME PAGE MAP ── */
-  #map {
-    width: 100%;
-    height: 420px;
-    border-radius: 12px;
-    border: 1px solid #ccc8b4;
-    overflow: hidden;
-  }
-  
-  /* ── HOME CATEGORY GRID ── */
-  .categories-section h2 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: #2d4a2d;
-  }
-  
-  .category-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-  
-  @media (min-width: 600px) {
-    .category-grid { grid-template-columns: repeat(4, 1fr); }
-  }
-  
-  .category-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-    padding: 1.2rem 0.75rem;
-    border-radius: 12px;
-    text-decoration: none;
-    color: white;
-    font-weight: 600;
-    transition: transform 0.15s, box-shadow 0.15s;
-    text-align: center;
-  }
-  
-  .category-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-  }
-  
-  .category-card.hikes { background: #2d6a2d; }
-  .category-card.bikes { background: #1a6e6e; }
-  .category-card.cafes { background: #b87a00; }
-  .category-card.camps { background: #c0440a; }
-  
-  .cat-icon  { font-size: 1.8rem; }
-  .cat-name  { font-size: 0.85rem; }
-  .cat-count { font-size: 0.75rem; opacity: 0.8; }
-  
-  /* ── HOME FILTER BAR ── */
-  .map-section .filter-bar { margin-bottom: 0.75rem; }
-  
-  .map-section .filter-btn.active[data-category="hikes"] { background: #2d6a2d; border-color: transparent; color: white; }
-  .map-section .filter-btn.active[data-category="bikes"] { background: #1a6e6e; border-color: transparent; color: white; }
-  .map-section .filter-btn.active[data-category="cafes"] { background: #b87a00; border-color: transparent; color: white; }
-  .map-section .filter-btn.active[data-category="camps"] { background: #c0440a; border-color: transparent; color: white; }
-  
-  /* ── POPUP ── */
+  /* ── MAP POPUPS ──────────────────────────────────────────────*/
   .leaflet-popup-content {
     font-family: 'Segoe UI', system-ui, sans-serif;
     min-width: 150px;
   }
   
   .popup-title {
-    font-weight: 700;
-    font-size: 0.9rem;
+    font-weight: 600;
+    font-size: 0.88rem;
     margin-bottom: 0.2rem;
+    color: var(--ink);
   }
   
   .popup-meta {
-    font-size: 0.78rem;
-    color: #666;
+    font-size: 0.75rem;
+    color: var(--muted);
     margin-bottom: 0.5rem;
   }
   
   .popup-link {
     display: inline-block;
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     font-weight: 600;
     color: white;
-    background: #2d4a2d;
-    padding: 0.25rem 0.7rem;
+    background: var(--header-bg);
+    padding: 0.22rem 0.65rem;
     border-radius: 999px;
     text-decoration: none;
   }
   
-  .popup-link:hover { background: #3d6b3d; }
+  .popup-link:hover { opacity: 0.85; }
   
-  /* ── RESPONSIVE ── */
-  @media (max-width: 500px) {
-    .route-card-image,
-    .place-card-image,
-    .camp-card-image { width: 80px; min-width: 80px; font-size: 2rem; }
-  
-    .overview-map { height: 200px; }
-  }
-  /* =====================================================
-   DETAIL PAGE STYLES
-   Used by hike-detail, bike-detail, cafe-detail,
-   camp-detail pages
-   ===================================================== */
-
-/* Cover image at top of detail page */
-.detail-cover {
+  /* ── DETAIL PAGE ─────────────────────────────────────────────*/
+  .detail-cover {
     width: 100%;
     height: 220px;
-    background: #ddd8c4;
-    border-radius: 12px;
+    background: var(--surface);
+    border-radius: 10px;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 4rem;
+    font-size: 3rem;
+    color: var(--muted);
   }
   
-  .detail-cover img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
+  .detail-cover img { width: 100%; height: 100%; object-fit: cover; }
   
-  /* Title + badges row */
-  .detail-header {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
+  .detail-header { display: flex; flex-direction: column; gap: 0.5rem; }
   
   .detail-title {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 700;
     line-height: 1.2;
+    color: var(--ink);
   }
   
-  .detail-badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-  }
+  .detail-badges { display: flex; flex-wrap: wrap; gap: 0.4rem; }
   
-  /* Stats row — distance, elevation, surface */
-  .detail-stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
+  .detail-stats { display: flex; flex-wrap: wrap; gap: 0.65rem; }
   
   .detail-stat {
     background: white;
-    border: 1px solid #e0ddd0;
-    border-radius: 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
     padding: 0.6rem 1rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.15rem;
-    min-width: 80px;
+    gap: 0.1rem;
+    min-width: 78px;
     flex: 1;
   }
   
   .detail-stat-value {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     font-weight: 700;
-    color: #1e1e16;
+    color: var(--ink);
   }
   
   .detail-stat-label {
-    font-size: 0.7rem;
-    color: #888;
+    font-size: 0.65rem;
+    color: var(--muted);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
   }
   
-  /* Map on detail page */
   .detail-map {
     width: 100%;
-    height: 320px;
-    border-radius: 12px;
-    border: 1px solid #ccc8b4;
+    height: 300px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
     overflow: hidden;
   }
   
-  /* Elevation profile chart container */
   .elevation-section {
     background: white;
-    border: 1px solid #e0ddd0;
-    border-radius: 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
     padding: 1rem;
   }
   
   .elevation-section h3 {
-    font-size: 0.85rem;
+    font-size: 0.7rem;
     font-weight: 600;
-    color: #666;
+    color: var(--muted);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.75rem;
+    letter-spacing: 0.07em;
+    margin-bottom: 0.65rem;
   }
   
-  .elevation-chart {
-    width: 100%;
-    height: 100px;
-    display: block;
-  }
+  .elevation-chart { width: 100%; height: 90px; display: block; }
   
-  /* Description and good-to-know sections */
   .detail-section {
     background: white;
-    border: 1px solid #e0ddd0;
-    border-radius: 12px;
-    padding: 1rem 1.1rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.9rem 1.1rem;
   }
   
   .detail-section h3 {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #888;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--muted);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.07em;
     margin-bottom: 0.5rem;
   }
   
   .detail-section p {
-    font-size: 0.9rem;
-    line-height: 1.6;
-    color: #333;
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: var(--ink);
   }
   
   /* GPX download button */
@@ -624,114 +590,107 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding: 0.85rem;
-    background: #2d6a2d;
+    padding: 0.8rem;
+    background: var(--hike);
     color: white;
-    border-radius: 10px;
+    border-radius: 8px;
     text-decoration: none;
-    font-weight: 700;
-    font-size: 0.9rem;
-    transition: background 0.15s;
+    font-weight: 600;
+    font-size: 0.88rem;
+    transition: opacity 0.15s;
   }
   
-  .gpx-download:hover { background: #3d8a3d; }
-  
-  body.page-bikes .gpx-download { background: #1a6e6e; }
-  body.page-bikes .gpx-download:hover { background: #2a8e8e; }
+  .gpx-download:hover { opacity: 0.88; }
+  body.page-bikes .gpx-download { background: var(--bike); }
   
   .gpx-download.disabled {
-    background: #ccc;
-    color: #888;
+    background: var(--surface);
+    color: var(--muted);
     cursor: not-allowed;
     pointer-events: none;
+    border: 1px solid var(--border);
   }
   
-  /* Open in Maps link button */
+  /* Open in Maps button */
   .maps-link {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding: 0.85rem;
-    background: #1a6e9e;
+    padding: 0.8rem;
+    background: #5a7a9a;
     color: white;
-    border-radius: 10px;
+    border-radius: 8px;
     text-decoration: none;
-    font-weight: 700;
-    font-size: 0.9rem;
-    transition: background 0.15s;
+    font-weight: 600;
+    font-size: 0.88rem;
+    transition: opacity 0.15s;
   }
   
-  .maps-link:hover { background: #2a8ebe; }
+  .maps-link:hover { opacity: 0.88; }
   
-  /* Menu highlights for cafes */
-  .menu-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
+  /* Menu items list on cafe detail */
+  .menu-list { display: flex; flex-direction: column; gap: 0; }
   
   .menu-item {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.9rem;
-    color: #333;
-    padding: 0.4rem 0;
-    border-bottom: 1px solid #f0ede0;
+    font-size: 0.88rem;
+    color: var(--ink);
+    padding: 0.45rem 0;
+    border-bottom: 1px solid var(--surface);
   }
   
   .menu-item:last-child { border-bottom: none; }
   
-  /* Nearby camps section on route detail pages */
-  .nearby-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
+  /* Nearby camps / routes section */
+  .nearby-list { display: flex; flex-direction: column; gap: 0.4rem; }
   
   .nearby-item {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.65rem;
     padding: 0.6rem 0.75rem;
-    background: #f9f7f0;
+    background: var(--surface);
     border-radius: 8px;
     text-decoration: none;
-    color: #1e1e16;
-    font-size: 0.85rem;
-    border: 1px solid #e0ddd0;
+    color: var(--ink);
+    font-size: 0.84rem;
+    border: 1px solid var(--border);
     transition: background 0.15s;
   }
   
-  .nearby-item:hover { background: #f0ede0; }
+  .nearby-item:hover { background: var(--border); }
+  .nearby-item-icon  { font-size: 1.1rem; color: var(--muted); }
+  .nearby-item-name  { font-weight: 600; flex: 1; }
+  .nearby-item-type  { font-size: 0.72rem; color: var(--muted); }
   
-  .nearby-item-icon { font-size: 1.2rem; }
+  /* Not found page */
+  .not-found { text-align: center; padding: 3rem 1rem; color: var(--muted); }
+  .not-found h2 { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--ink); }
+  .not-found a  { color: var(--hike); }
   
-  .nearby-item-name { font-weight: 600; flex: 1; }
-  
-  .nearby-item-type { font-size: 0.75rem; color: #888; }
-  
-  /* Not found message */
-  .not-found {
-    text-align: center;
-    padding: 3rem 1rem;
-    color: #888;
-  }
-  
-  .not-found h2 { font-size: 1.2rem; margin-bottom: 0.5rem; }
-  .not-found a  { color: #2d6a2d; }
-  
-  /* Photo gallery for cafes */
+  /* Photo gallery */
   .photo-gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     gap: 0.5rem;
   }
   
   .photo-gallery img {
     width: 100%;
-    height: 100px;
+    height: 95px;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 6px;
+  }
+  
+  /* ── RESPONSIVE ──────────────────────────────────────────────*/
+  @media (max-width: 480px) {
+    .route-card-image,
+    .place-card-image,
+    .camp-card-image { width: 76px; min-width: 76px; }
+  
+    .overview-map { height: 190px; }
+    #map          { height: 340px; }
   }

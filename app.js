@@ -38,14 +38,23 @@ function sanitize(str) {
     hard:   'badge-hard'
   };
   
-  // Labels and emoji shown on camp facility badges
-  const FACILITY_ICONS = {
-    fireplace:    '🔥 Fire',
-    water_nearby: '💧 Water',
-    toilet:       '🚻 Toilet',
-    parking:      '🅿️ Parking',
-    swimming:     '🏊 Swimming'
-  };
+  /// Plain text labels — icon is added by facilityBadges() below
+const FACILITY_ICONS = {
+  fireplace:    'Fire',
+  water_nearby: 'Water',
+  toilet:       'Toilet',
+  parking:      'Parking',
+  swimming:     'Swimming'
+};
+
+// Icon class per facility — kept separate from the label
+const FACILITY_ICON_CLASS = {
+  fireplace:    'ph-fire',
+  water_nearby: 'ph-drop',
+  toilet:       'ph-toilet-paper',
+  parking:      'ph-parking-sign',
+  swimming:     'ph-waves'
+};
   
   
   // ── BADGE HELPERS ─────────────────────────────────────────────
@@ -68,12 +77,19 @@ function sanitize(str) {
     return `<span class="badge badge-gpx">GPX route</span>`;
   }
   
-  // One green pill per facility in the array
-  function facilityBadges(facilities) {
-    return (facilities || [])
-      .map(f => `<span class="badge badge-facility">${sanitize(FACILITY_ICONS[f] || f)}</span>`)
-      .join('');
-  }
+  // Returns one styled pill per facility
+// Icon and label are combined here in real HTML — not in the data object
+function facilityBadges(facilities) {
+  return (facilities || [])
+    .map(f => {
+      const label     = FACILITY_ICONS[f] || f;
+      const iconClass = FACILITY_ICON_CLASS[f] || 'ph-tag';
+      return `<span class="badge badge-facility">
+        <i class="ph-light ${iconClass}"></i> ${sanitize(label)}
+      </span>`;
+    })
+    .join('');
+}
   
   
   // ── CUSTOM MAP ICONS ──────────────────────────────────────────
@@ -110,10 +126,10 @@ function sanitize(str) {
   
   // One icon per category — reused on every map in the app
   const ICONS = {
-    hikes: makeIcon('🥾', '#2d6a2d'),
-    bikes: makeIcon('🚵', '#1a6e6e'),
-    cafes: makeIcon('🍴', '#b87a00'),
-    camps: makeIcon('⛺', '#c0440a')
+    hikes: makeIcon('<i class="ph-light ph-boot"></i>',       '#6b7c5e'),
+    bikes: makeIcon('<i class="ph-light ph-bicycle"></i>',    '#6b7870'),
+    cafes: makeIcon('<i class="ph-light ph-fork-knife"></i>', '#9c7d58'),
+    camps: makeIcon('<i class="ph-light ph-tent"></i>',       '#8c6e58')
   };
   
   
@@ -135,10 +151,11 @@ function sanitize(str) {
     const map = L.map(mapId);
   
     // OpenStreetMap tiles — free, no API key needed
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxZoom: 19
-    }).addTo(map);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  maxZoom: 19,
+  // Remove subdomains — the {s} subdomain rotation is what triggers the block
+}).addTo(map);
   
     items.forEach(item => {
       const marker = L.marker([item.lat, item.lng], { icon: ICONS[category] });
@@ -214,10 +231,11 @@ function sanitize(str) {
   
     const map = L.map('map', { center: [59.270, 18.120], zoom: 10 });
   
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxZoom: 19
-    }).addTo(map);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  maxZoom: 19,
+  // Remove subdomains — the {s} subdomain rotation is what triggers the block
+}).addTo(map);
   
     // Each category gets its own layer group so we can
     // show/hide it independently with the filter buttons
@@ -307,9 +325,9 @@ function sanitize(str) {
           <div class="route-card-body">
             <div class="route-card-title">${sanitize(h.name)}</div>
             <div class="route-card-stats">
-              <span class="stat">📏 ${sanitize(String(h.distance_km))} km</span>
-              <span class="stat">⬆️ ${sanitize(String(h.elevation_m))} m</span>
-              <span class="stat">🏃 ${sanitize(h.surface)}</span>
+            <span class="stat"><i class="ph-light ph-ruler"></i> ${sanitize(String(h.distance_km))} km</span>
+            <span class="stat"><i class="ph-light ph-trend-up"></i> ${sanitize(String(h.elevation_m))} m</span>
+            <span class="stat"><i class="ph-light ph-path"></i> ${sanitize(h.surface)}</span>
             </div>
             <div class="route-card-badges">
               ${difficultyBadge(h.difficulty)}
@@ -602,17 +620,31 @@ function sanitize(str) {
         <h3>Trail markers</h3>
         <p>${sanitize(item.trail_markers)}</p>
       </div>` : ''}
-  
+      
+      <!-- Parking / start point info — only shown if set in data.js -->
+      ${item.parking_lat ? `
+      <div class="detail-section">
+        <h3><i class="ph-light ph-car"></i> Parking & start point</h3>
+        <p>${sanitize(item.parking_note || 'Parking available at start point')}</p>
+        <a class="maps-link"
+           href="https://maps.google.com/?q=${item.parking_lat},${item.parking_lng}"
+           target="_blank"
+           rel="noopener noreferrer"
+           style="margin-top: 0.65rem;">
+          <i class="ph-light ph-navigation-arrow"></i> Get directions to start
+        </a>
+      </div>` : ''}
+
       <!-- GPX download — greyed out if no file set yet -->
       ${item.gpx_file
         ? `<a class="gpx-download"
-              href="${sanitize(item.gpx_file)}"
-              download>
-             ⬇️ Download GPX file
-           </a>`
-        : `<span class="gpx-download disabled">
-             ⬇️ GPX coming soon
-           </span>`}
+            href="${sanitize(item.gpx_file)}"
+            download>
+           <i class="ph-light ph-download-simple"></i> Download GPX file
+         </a>`
+         : `<span class="gpx-download disabled">
+         <i class="ph-light ph-download-simple"></i> GPX coming soon
+       </span>`}
   
       <!-- Nearby camps — only shown if shelters_nearby is populated -->
       ${nearbyCamps.length > 0 ? `
@@ -645,18 +677,50 @@ function sanitize(str) {
   function buildRouteDetailMap(item, category) {
     const map = L.map('detail-map');
   
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxZoom: 19
-    }).addTo(map);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  maxZoom: 19,
+  // Remove subdomains — the {s} subdomain rotation is what triggers the block
+}).addTo(map);
   
-    // Always show a start point pin
-    L.marker([item.lat, item.lng], { icon: ICONS[category] })
-      .bindPopup(`
-        <div class="popup-title">${sanitize(item.name)}</div>
-        <div class="popup-meta">Start point</div>
-      `)
-      .addTo(map);
+    // Start point pin — uses the category icon
+L.marker([item.lat, item.lng], { icon: ICONS[category] })
+.bindPopup(`
+  <div class="popup-title">${sanitize(item.name)}</div>
+  <div class="popup-meta">Start point</div>
+`)
+.addTo(map);
+
+// Parking marker — only shown if parking coords are set
+if (item.parking_lat && item.parking_lng) {
+const parkingIcon = L.divIcon({
+  className: '',
+  html: `<div style="
+    background: #5a7a9a;
+    width: 32px; height: 32px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    border: 2px solid white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    display: flex; align-items: center; justify-content: center;
+  "><span style="transform: rotate(45deg); font-size: 13px; color: white; font-weight: 700;">P</span></div>`,
+  iconSize:    [32, 32],
+  iconAnchor:  [16, 32],
+  popupAnchor: [0, -34]
+});
+
+const parkingNote  = item.parking_note || 'Parking / start point';
+const directionsUrl = `https://maps.google.com/?q=${item.parking_lat},${item.parking_lng}`;
+
+L.marker([item.parking_lat, item.parking_lng], { icon: parkingIcon })
+  .bindPopup(`
+    <div class="popup-title">Parking</div>
+    <div class="popup-meta">${sanitize(parkingNote)}</div>
+    <a class="popup-link" href="${sanitize(directionsUrl)}"
+       target="_blank" rel="noopener">Get directions →</a>
+  `)
+  .addTo(map);
+};
   
     if (item.gpx_file) {
       // Fetch and parse the GPX file, then draw the route
@@ -855,11 +919,11 @@ function sanitize(str) {
   
       <!-- Opens Google Maps in a new tab -->
       <a class="maps-link"
-         href="${sanitize(mapsUrl)}"
-         target="_blank"
-         rel="noopener noreferrer">
-        📍 Open in Google Maps
-      </a>
+       href="${sanitize(mapsUrl)}"
+       target="_blank"
+       rel="noopener noreferrer">
+      <i class="ph-light ph-map-pin"></i> Open in Google Maps
+    </a>
   
       <!-- Description -->
       <div class="detail-section">
@@ -882,10 +946,11 @@ function sanitize(str) {
   
     // Simple pin map — no GPX for cafes
     const map = L.map('detail-map').setView([item.lat, item.lng], 15);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxZoom: 19
-    }).addTo(map);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  maxZoom: 19,
+  // Remove subdomains — the {s} subdomain rotation is what triggers the block
+}).addTo(map);
   
     L.marker([item.lat, item.lng], { icon: ICONS.cafes })
       .bindPopup(`<div class="popup-title">${sanitize(item.name)}</div>`)
@@ -954,11 +1019,11 @@ function sanitize(str) {
   
       <!-- Opens Google Maps in a new tab -->
       <a class="maps-link"
-         href="${sanitize(mapsUrl)}"
-         target="_blank"
-         rel="noopener noreferrer">
-        📍 Open in Google Maps
-      </a>
+       href="${sanitize(mapsUrl)}"
+       target="_blank"
+       rel="noopener noreferrer">
+      <i class="ph-light ph-map-pin"></i> Open in Google Maps
+    </a>
   
       <!-- Description -->
       <div class="detail-section">
@@ -999,9 +1064,10 @@ function sanitize(str) {
   
     // Simple pin map
     const map = L.map('detail-map').setView([item.lat, item.lng], 14);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxZoom: 19
+      maxZoom: 19,
+      // Remove subdomains — the {s} subdomain rotation is what triggers the block
     }).addTo(map);
   
     L.marker([item.lat, item.lng], { icon: ICONS.camps })

@@ -5,14 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cafes & Restaurants — Trailhead</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/light/style.css"/>
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="page-cafes">
   <header>
     <div class="header-inner">
-      <a href="index.html" class="back-btn">←</a>
+      <a href="index.html" class="back-btn">
+        <i class="ph-light ph-arrow-left"></i>
+      </a>
       <div class="header-text">
-        <div class="logo">🍴 Cafes & restaurants</div>
+        <div class="logo">
+          <i class="ph-light ph-fork-knife"></i> Cafes & restaurants
+        </div>
       </div>
       <span class="header-count" id="page-count"></span>
     </div>
@@ -29,7 +34,7 @@
     <div class="items-list" id="items-list"></div>
   </main>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="data.js"></script>   <!-- data always loads first -->
-  <script src="app.js"></script>    <!-- logic loads second -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>

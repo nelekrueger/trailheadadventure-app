@@ -27,6 +27,9 @@
 //   image         path to cover image, e.g. "assets/hike-001.jpg", or null
 //   shelters_nearby  array of camp ids visible as overlay on this route
 //   lat / lng     coordinates for the map pin (start point)
+//   parking_lat: coordinates for the parking latitude
+//   parking_long coordinataes for the parking longitude
+//   parking_note any info on the parking
 
 const HIKES = [
     {
@@ -45,7 +48,10 @@ const HIKES = [
       image: null,
       shelters_nearby: ["camp-001"],
       lat: 59.295,
-      lng: 18.140
+      lng: 18.140,
+      parking_lat: 59.295,
+      parking_lng: 18.140,
+      parking_note: "Free parking at Nackareservatet entrance, 20 spaces"
     },
     {
       id: "hike-002",
@@ -63,7 +69,10 @@ const HIKES = [
       image: null,
       shelters_nearby: ["camp-003"],
       lat: 59.180,
-      lng: 18.270
+      lng: 18.270,
+      parking_lat: 59.295,
+      parking_lng: 18.140,
+      parking_note: "Free parking at Nackareservatet entrance, 20 spaces"
     },
     {
       id: "hike-003",
@@ -81,7 +90,10 @@ const HIKES = [
       image: null,
       shelters_nearby: ["camp-002"],
       lat: 59.260,
-      lng: 18.110
+      lng: 18.110,
+      parking_lat: 59.295,
+      parking_lng: 18.140,
+      parking_note: "Free parking at Nackareservatet entrance, 20 spaces"
     }
   ];
   
@@ -107,7 +119,10 @@ const HIKES = [
       image: null,
       shelters_nearby: ["camp-002"],
       lat: 59.170,
-      lng: 18.150
+      lng: 18.150,
+      parking_lat: 59.295,
+      parking_lng: 18.140,
+      parking_note: "Free parking at Nackareservatet entrance, 20 spaces"
     },
     {
       id: "bike-002",
@@ -125,7 +140,10 @@ const HIKES = [
       image: null,
       shelters_nearby: ["camp-001", "camp-003"],
       lat: 59.050,
-      lng: 17.950
+      lng: 17.950,
+      parking_lat: 59.295,
+      parking_lng: 18.140,
+      parking_note: "Free parking at Nackareservatet entrance, 20 spaces"
     }
   ];
   
