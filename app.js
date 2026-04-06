@@ -126,7 +126,7 @@ function facilityBadges(facilities) {
   
   // One icon per category — reused on every map in the app
   const ICONS = {
-    hikes: makeIcon('<i class="ph-light ph-boot"></i>',       '#6b7c5e'),
+    hikes: makeIcon('<i class="ph-light ph-sneaker"></i>',       '#6b7c5e'),
     bikes: makeIcon('<i class="ph-light ph-bicycle"></i>',    '#6b7870'),
     cafes: makeIcon('<i class="ph-light ph-fork-knife"></i>', '#9c7d58'),
     camps: makeIcon('<i class="ph-light ph-tent"></i>',       '#8c6e58')
@@ -320,7 +320,7 @@ function facilityBadges(facilities) {
           <div class="route-card-image">
             ${h.image
               ? `<img src="${sanitize(h.image)}" alt="${sanitize(h.name)}">`
-              : '🥾'}
+              : '<i class="ph-light ph-sneaker" style="font-size:1.8rem;color:var(--muted)"></i>'}
           </div>
           <div class="route-card-body">
             <div class="route-card-title">${sanitize(h.name)}</div>
@@ -375,14 +375,14 @@ function facilityBadges(facilities) {
           <div class="route-card-image">
             ${b.image
               ? `<img src="${sanitize(b.image)}" alt="${sanitize(b.name)}">`
-              : '🚵'}
+              : '<i class="ph-light ph-bicycle" style="font-size:1.8rem;color:var(--muted)"></i>'}
           </div>
           <div class="route-card-body">
             <div class="route-card-title">${sanitize(b.name)}</div>
             <div class="route-card-stats">
-              <span class="stat">📏 ${sanitize(String(b.distance_km))} km</span>
-              <span class="stat">⬆️ ${sanitize(String(b.elevation_m))} m</span>
-              <span class="stat">🚵 ${sanitize(b.surface)}</span>
+            <span class="stat"><i class="ph-light ph-ruler"></i> ${sanitize(String(b.distance_km))} km</span>
+            <span class="stat"><i class="ph-light ph-trend-up"></i> ${sanitize(String(b.elevation_m))} m</span>
+            <span class="stat"><i class="ph-light ph-path"></i> ${sanitize(b.surface)}</span>
             </div>
             <div class="route-card-badges">
               ${difficultyBadge(b.difficulty)}
@@ -431,7 +431,7 @@ function facilityBadges(facilities) {
           <div class="place-card-image">
             ${c.images && c.images[0]
               ? `<img src="${sanitize(c.images[0])}" alt="${sanitize(c.name)}">`
-              : '🍴'}
+              : '<i class="ph-light ph-fork-knife" style="font-size:1.8rem;color:var(--muted)"></i>'}
           </div>
           <div class="place-card-body">
             <div class="place-card-title">${sanitize(c.name)}</div>
@@ -486,7 +486,7 @@ function facilityBadges(facilities) {
           <div class="camp-card-image">
             ${c.image
               ? `<img src="${sanitize(c.image)}" alt="${sanitize(c.name)}">`
-              : '⛺'}
+              : '<i class="ph-light ph-tent" style="font-size:1.8rem;color:var(--muted)"></i>'}
           </div>
           <div class="camp-card-body">
             <div class="camp-card-title">${sanitize(c.name)}</div>
@@ -557,7 +557,9 @@ function facilityBadges(facilities) {
       <div class="detail-cover">
         ${item.image
           ? `<img src="${sanitize(item.image)}" alt="${sanitize(item.name)}">`
-          : (category === 'hikes' ? '🥾' : '🚵')}
+          : (category === 'hikes'
+          ? '<i class="ph-light ph-boot" style="font-size:3rem;color:var(--muted)"></i>'
+          : '<i class="ph-light ph-bicycle" style="font-size:3rem;color:var(--muted)"></i>')}
       </div>
   
       <!-- Title and badges -->
@@ -566,7 +568,7 @@ function facilityBadges(facilities) {
         <div class="detail-badges">
           ${difficultyBadge(item.difficulty)}
           ${officialBadge(item)}
-          <span class="badge badge-type">🏃 ${sanitize(item.surface)}</span>
+          <span class="badge badge-type"><i class="ph-light ph-path"></i> ${sanitize(item.surface)}</span>
         </div>
       </div>
   
@@ -654,7 +656,7 @@ function facilityBadges(facilities) {
           ${nearbyCamps.map(camp => `
             <a class="nearby-item"
                href="camp-detail.html?id=${sanitize(camp.id)}">
-              <span class="nearby-item-icon">⛺</span>
+               <span class="nearby-item-icon"><i class="ph-light ph-tent"></i></span>
               <span class="nearby-item-name">${sanitize(camp.name)}</span>
               <span class="nearby-item-type">${sanitize(camp.type)}</span>
             </a>
@@ -857,108 +859,106 @@ L.marker([item.parking_lat, item.parking_lng], { icon: parkingIcon })
   
   
   // ── DETAIL PAGE: CAFE ─────────────────────────────────────────
-  // Runs on cafe-detail.html.
-  // Shows photo gallery, map pin, Open in Maps link,
-  // description and menu highlights.
-  
-  function buildCafeDetailPage() {
-    const mainEl = document.getElementById('detail-main');
-    if (!mainEl) return;
-  
-    const params = new URLSearchParams(window.location.search);
-    const id     = params.get('id');
-    const item   = CAFES.find(c => c.id === id);
-  
-    const backBtn = document.querySelector('.back-btn');
-    if (backBtn) backBtn.href = 'cafes.html';
-  
-    if (!item) {
-      document.getElementById('detail-title').textContent = 'Not found';
-      mainEl.innerHTML = `
-        <div class="not-found">
-          <h2>Place not found</h2>
-          <p><a href="cafes.html">← Go back</a></p>
-        </div>`;
-      return;
-    }
-  
-    document.getElementById('detail-title').textContent = item.name;
-    document.title = `${item.name} — Trailhead`;
-  
-    // Google Maps deep link using coordinates
-    const mapsUrl =
-      `https://maps.google.com/?q=${item.lat},${item.lng}`;
-  
+// Runs on cafe-detail.html.
+// Shows photo gallery, map pin, Open in Maps link,
+// description and menu highlights.
+
+function buildCafeDetailPage() {
+  const mainEl = document.getElementById('detail-main');
+  if (!mainEl) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const id     = params.get('id');
+  const item   = CAFES.find(c => c.id === id);
+
+  const backBtn = document.querySelector('.back-btn');
+  if (backBtn) backBtn.href = 'cafes.html';
+
+  if (!item) {
+    document.getElementById('detail-title').textContent = 'Not found';
     mainEl.innerHTML = `
-  
-      <!-- Cover photo or emoji placeholder -->
-      <div class="detail-cover">
-        ${item.images && item.images[0]
-          ? `<img src="${sanitize(item.images[0])}" alt="${sanitize(item.name)}">`
-          : '🍴'}
+      <div class="not-found">
+        <h2>Place not found</h2>
+        <p><a href="cafes.html">← Go back</a></p>
+      </div>`;
+    return;
+  }
+
+  document.getElementById('detail-title').textContent = item.name;
+  document.title = `${item.name} — Trailhead`;
+
+  // Google Maps deep link using coordinates
+  const mapsUrl = `https://maps.google.com/?q=${item.lat},${item.lng}`;
+
+  mainEl.innerHTML = `
+
+    <!-- Cover photo or icon placeholder -->
+    <div class="detail-cover">
+      ${item.images && item.images[0]
+        ? `<img src="${sanitize(item.images[0])}" alt="${sanitize(item.name)}">`
+        : '<i class="ph-light ph-fork-knife" style="font-size:3rem;color:var(--muted)"></i>'}
+    </div>
+
+    <!-- Additional photos grid — only shown if more than one image -->
+    ${item.images && item.images.length > 1 ? `
+    <div class="photo-gallery">
+      ${item.images.slice(1)
+        .map(img => `<img src="${sanitize(img)}" alt="${sanitize(item.name)}">`)
+        .join('')}
+    </div>` : ''}
+
+    <!-- Title and type badge -->
+    <div class="detail-header">
+      <div class="detail-title">${sanitize(item.name)}</div>
+      <div class="detail-badges">
+        <span class="badge badge-type">${sanitize(item.type)}</span>
       </div>
-  
-      <!-- Additional photos grid — shown if more than one image -->
-      ${item.images && item.images.length > 1 ? `
-      <div class="photo-gallery">
-        ${item.images.slice(1)
-          .map(img => `<img src="${sanitize(img)}" alt="${sanitize(item.name)}">`)
-          .join('')}
-      </div>` : ''}
-  
-      <!-- Title and type badge -->
-      <div class="detail-header">
-        <div class="detail-title">${sanitize(item.name)}</div>
-        <div class="detail-badges">
-          <span class="badge badge-type">${sanitize(item.type)}</span>
-        </div>
-      </div>
-  
-      <!-- Map pin -->
-      <div id="detail-map" class="detail-map"></div>
-  
-      <!-- Opens Google Maps in a new tab -->
-      <a class="maps-link"
+    </div>
+
+    <!-- Map pin -->
+    <div id="detail-map" class="detail-map"></div>
+
+    <!-- Opens Google Maps in a new tab -->
+    <a class="maps-link"
        href="${sanitize(mapsUrl)}"
        target="_blank"
        rel="noopener noreferrer">
       <i class="ph-light ph-map-pin"></i> Open in Google Maps
     </a>
-  
-      <!-- Description -->
-      <div class="detail-section">
-        <h3>About</h3>
-        <p>${sanitize(item.description)}</p>
+
+    <!-- Description -->
+    <div class="detail-section">
+      <h3>About</h3>
+      <p>${sanitize(item.description)}</p>
+    </div>
+
+    <!-- Menu highlights — only shown if array has items -->
+    ${item.menu_highlights && item.menu_highlights.length > 0 ? `
+    <div class="detail-section">
+      <h3>Menu highlights</h3>
+      <div class="menu-list">
+        ${item.menu_highlights
+          .map(m => `<div class="menu-item"><i class="ph-light ph-fork-knife"></i> ${sanitize(m)}</div>`)
+          .join('')}
       </div>
-  
-      <!-- Menu highlights list -->
-      ${item.menu_highlights && item.menu_highlights.length > 0 ? `
-      <div class="detail-section">
-        <h3>Menu highlights</h3>
-        <div class="menu-list">
-          ${item.menu_highlights
-            .map(m => `<div class="menu-item">🍽 ${sanitize(m)}</div>`)
-            .join('')}
-        </div>
-      </div>` : ''}
-  
-    `;
-  
-    // Simple pin map — no GPX for cafes
-    const map = L.map('detail-map').setView([item.lat, item.lng], 15);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-  maxZoom: 19,
-  // Remove subdomains — the {s} subdomain rotation is what triggers the block
-}).addTo(map);
-  
-    L.marker([item.lat, item.lng], { icon: ICONS.cafes })
-      .bindPopup(`<div class="popup-title">${sanitize(item.name)}</div>`)
-      .openPopup()
-      .addTo(map);
-  }
-  
-  
+    </div>` : ''}
+
+  `;
+
+  // Simple pin map — no GPX for cafes
+  const map = L.map('detail-map').setView([item.lat, item.lng], 15);
+
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19
+  }).addTo(map);
+
+  L.marker([item.lat, item.lng], { icon: ICONS.cafes })
+    .bindPopup(`<div class="popup-title">${sanitize(item.name)}</div>`)
+    .openPopup()
+    .addTo(map);
+}
+
   // ── DETAIL PAGE: CAMP ─────────────────────────────────────────
   // Runs on camp-detail.html.
   // Shows description, facilities, map pin, Open in Maps link,
@@ -1003,7 +1003,7 @@ L.marker([item.parking_lat, item.parking_lng], { icon: parkingIcon })
       <div class="detail-cover">
         ${item.image
           ? `<img src="${sanitize(item.image)}" alt="${sanitize(item.name)}">`
-          : '⛺'}
+          : '<i class="ph-light ph-tent" style="font-size:3rem;color:var(--muted)"></i>'}
       </div>
   
       <!-- Title and type badge -->
@@ -1052,7 +1052,9 @@ L.marker([item.parking_lat, item.parking_lng], { icon: parkingIcon })
               : `bike-detail.html?id=${sanitize(r.id)}`;
             return `
               <a class="nearby-item" href="${detailUrl}">
-                <span class="nearby-item-icon">${isHike ? '🥾' : '🚵'}</span>
+              <span class="nearby-item-icon">
+              <i class="ph-light ${isHike ? 'ph-sneaker' : 'ph-bicycle'}"></i>
+            </span>
                 <span class="nearby-item-name">${sanitize(r.name)}</span>
                 <span class="nearby-item-type">${sanitize(String(r.distance_km))} km</span>
               </a>`;
