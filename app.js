@@ -90,7 +90,70 @@ function facilityBadges(facilities) {
     })
     .join('');
 }
-  
+  // ── PRICE DISPLAY ─────────────────────────────────────────────
+// Renders $ / $$ / $$$ with active symbols dark, inactive faded.
+// $ is used as a universal price-level convention, not currency.
+
+function priceDisplay(level) {
+  const active = '$'.repeat(level || 1);
+  const faded  = '$'.repeat(3 - (level || 1));
+  return `<span class="price-range">
+    <span class="active">${active}</span><span class="inactive">${faded}</span>
+  </span>`;
+}
+
+
+// ── CAFE INFO GRID ────────────────────────────────────────────
+// Builds the info cards and feature tags for a cafe detail page.
+// Kept separate so buildCafeDetailPage() stays readable.
+
+function buildCafeInfoHTML(item) {
+
+  // Payment tags — only rendered if a restriction exists
+  const paymentTags = [
+    item.cash_only  ? `<span class="tag tag-payment"><i class="ph-light ph-money"></i> Cash only</span>`          : '',
+    item.swish_only ? `<span class="tag tag-payment"><i class="ph-light ph-device-mobile"></i> Swish only</span>` : ''
+  ].filter(Boolean).join('');
+
+  // Feature tags — only rendered if true
+  const featureTags = [
+    item.dog_friendly    ? `<span class="tag tag-yes"><i class="ph-light ph-paw-print"></i> Dogs welcome</span>`  : '',
+    item.outdoor_seating ? `<span class="tag tag-yes"><i class="ph-light ph-park"></i> Outdoor seating</span>`    : '',
+    item.vegetarian      ? `<span class="tag tag-yes"><i class="ph-light ph-leaf"></i> Vegetarian</span>`         : '',
+    item.vegan           ? `<span class="tag tag-yes"><i class="ph-light ph-leaf"></i> Vegan</span>`              : '',
+  ].filter(Boolean).join('');
+
+  return `
+    <div class="info-grid">
+
+      <div class="info-card">
+        <span class="info-card-label">
+          <i class="ph-light ph-receipt"></i> Price
+        </span>
+        <span class="info-card-value">${priceDisplay(item.price_range)}</span>
+      </div>
+
+      ${item.vibe ? `
+      <div class="info-card">
+        <span class="info-card-label">Vibe</span>
+        <span class="info-card-value">${sanitize(item.vibe)}</span>
+      </div>` : ''}
+
+    </div>
+
+    ${featureTags ? `
+    <div class="detail-section">
+      <h3>Good to know</h3>
+      <div class="tag-row">${featureTags}</div>
+    </div>` : ''}
+
+    ${paymentTags ? `
+    <div class="detail-section">
+      <h3><i class="ph-light ph-credit-card"></i> Payment</h3>
+      <div class="tag-row">${paymentTags}</div>
+    </div>` : ''}
+  `;
+}
   
   // ── CUSTOM MAP ICONS ──────────────────────────────────────────
   // Creates a teardrop-shaped Leaflet marker using a coloured
@@ -290,114 +353,200 @@ function facilityBadges(facilities) {
   // Builds the overview map and card list on hikes.html.
   // Cards can be filtered by difficulty level.
   
-  function buildHikesPage() {
-    const mapEl = document.getElementById('hikes-map');
-    if (!mapEl) return;
-  
-    document.getElementById('page-count').textContent = `${HIKES.length} routes`;
-  
-    buildOverviewMap('hikes-map', HIKES, 'hikes',
-      h => `${h.distance_km} km · ${h.elevation_m}m · ${DIFFICULTY_LABEL[h.difficulty]}`
-    );
-  
-    function renderCards(filter) {
-      const list     = document.getElementById('items-list');
-      const filtered = filter === 'all'
-        ? HIKES
-        : HIKES.filter(h => h.difficulty === filter);
-  
-      if (filtered.length === 0) {
-        list.innerHTML = '<p class="no-results">No routes match this filter.</p>';
-        return;
-      }
-  
-      // Each card is a full <a> tag so the whole card is clickable
-      // id="card-X" is what the map pin click uses to scroll here
-      list.innerHTML = filtered.map(h => `
-        <a class="route-card"
-           id="card-${sanitize(h.id)}"
-           href="hike-detail.html?id=${sanitize(h.id)}">
-          <div class="route-card-image">
-            ${h.image
-              ? `<img src="${sanitize(h.image)}" alt="${sanitize(h.name)}">`
-              : '<i class="ph-light ph-sneaker" style="font-size:1.8rem;color:var(--muted)"></i>'}
-          </div>
-          <div class="route-card-body">
-            <div class="route-card-title">${sanitize(h.name)}</div>
-            <div class="route-card-stats">
+ // ── HIKES LIST PAGE ───────────────────────────────────────────
+// Two independent filters:
+//   difficulty — single select (all / easy / medium / hard)
+//   distance   — multi select brackets (any combination)
+// Cards only show if they pass BOTH active filters.
+
+function buildHikesPage() {
+  const mapEl = document.getElementById('hikes-map');
+  if (!mapEl) return;
+
+  document.getElementById('page-count').textContent = `${HIKES.length} routes`;
+
+  buildOverviewMap('hikes-map', HIKES, 'hikes',
+    h => `${h.distance_km} km · ${h.elevation_m}m · ${DIFFICULTY_LABEL[h.difficulty]}`
+  );
+
+  // Track current filter state
+  let activeDifficulty = 'all';
+  let activeBrackets   = []; // array of {min, max} objects
+
+  function renderCards() {
+    const list = document.getElementById('items-list');
+
+    const filtered = HIKES.filter(h => {
+      // Difficulty check — 'all' passes everything
+      const diffOk = activeDifficulty === 'all'
+        || h.difficulty === activeDifficulty;
+
+      // Distance check — passes if no brackets selected,
+      // OR if the route falls within ANY selected bracket
+      const distOk = activeBrackets.length === 0
+        || activeBrackets.some(b =>
+            h.distance_km >= b.min && h.distance_km < b.max);
+
+      return diffOk && distOk;
+    });
+
+    if (filtered.length === 0) {
+      list.innerHTML = '<p class="no-results">No routes match these filters.</p>';
+      return;
+    }
+
+    list.innerHTML = filtered.map(h => `
+      <a class="route-card"
+         id="card-${sanitize(h.id)}"
+         href="hike-detail.html?id=${sanitize(h.id)}">
+        <div class="route-card-image">
+          ${h.image
+            ? `<img src="${sanitize(h.image)}" alt="${sanitize(h.name)}">`
+            : '<i class="ph-light ph-sneaker" style="font-size:1.8rem;color:var(--muted)"></i>'}
+        </div>
+        <div class="route-card-body">
+          <div class="route-card-title">${sanitize(h.name)}</div>
+          <div class="route-card-stats">
             <span class="stat"><i class="ph-light ph-ruler"></i> ${sanitize(String(h.distance_km))} km</span>
             <span class="stat"><i class="ph-light ph-trend-up"></i> ${sanitize(String(h.elevation_m))} m</span>
             <span class="stat"><i class="ph-light ph-path"></i> ${sanitize(h.surface)}</span>
-            </div>
-            <div class="route-card-badges">
-              ${difficultyBadge(h.difficulty)}
-              ${officialBadge(h)}
-            </div>
-            <div class="route-card-desc">${sanitize(h.description)}</div>
           </div>
-        </a>
-      `).join('');
-    }
-  
-    renderCards('all');
-    setupFilters(renderCards);
+          <div class="route-card-badges">
+            ${difficultyBadge(h.difficulty)}
+            ${officialBadge(h)}
+          </div>
+          <div class="route-card-desc">${sanitize(h.description)}</div>
+        </div>
+      </a>
+    `).join('');
   }
+
+  // Difficulty buttons — single select
+  document.querySelectorAll('.filter-btn:not(.bracket)').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn:not(.bracket)')
+        .forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeDifficulty = btn.dataset.filter;
+      renderCards();
+    });
+  });
+
+  // Distance bracket buttons — multi select toggle
+  document.querySelectorAll('.filter-btn.bracket').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('active');
+
+      // Rebuild the active brackets array from currently active buttons
+      activeBrackets = Array.from(
+        document.querySelectorAll('.filter-btn.bracket.active')
+      ).map(b => ({
+        min: parseFloat(b.dataset.min),
+        max: parseFloat(b.dataset.max)
+      }));
+
+      renderCards();
+    });
+  });
+
+  renderCards(); // initial render with no filters active
+}
   
   
   // ── BIKES LIST PAGE ───────────────────────────────────────────
   // Builds the overview map and card list on bikes.html.
   
-  function buildBikesPage() {
-    const mapEl = document.getElementById('bikes-map');
-    if (!mapEl) return;
-  
-    document.getElementById('page-count').textContent = `${BIKES.length} routes`;
-  
-    buildOverviewMap('bikes-map', BIKES, 'bikes',
-      b => `${b.distance_km} km · ${b.elevation_m}m · ${DIFFICULTY_LABEL[b.difficulty]}`
-    );
-  
-    function renderCards(filter) {
-      const list     = document.getElementById('items-list');
-      const filtered = filter === 'all'
-        ? BIKES
-        : BIKES.filter(b => b.difficulty === filter);
-  
-      if (filtered.length === 0) {
-        list.innerHTML = '<p class="no-results">No routes match this filter.</p>';
-        return;
-      }
-  
-      list.innerHTML = filtered.map(b => `
-        <a class="route-card"
-           id="card-${sanitize(b.id)}"
-           href="bike-detail.html?id=${sanitize(b.id)}">
-          <div class="route-card-image">
-            ${b.image
-              ? `<img src="${sanitize(b.image)}" alt="${sanitize(b.name)}">`
-              : '<i class="ph-light ph-bicycle" style="font-size:1.8rem;color:var(--muted)"></i>'}
-          </div>
-          <div class="route-card-body">
-            <div class="route-card-title">${sanitize(b.name)}</div>
-            <div class="route-card-stats">
+  // ── BIKES LIST PAGE ───────────────────────────────────────────
+// Same two-filter pattern as hikes —
+// difficulty (single select) + distance brackets (multi select)
+
+function buildBikesPage() {
+  const mapEl = document.getElementById('bikes-map');
+  if (!mapEl) return;
+
+  document.getElementById('page-count').textContent = `${BIKES.length} routes`;
+
+  buildOverviewMap('bikes-map', BIKES, 'bikes',
+    b => `${b.distance_km} km · ${b.elevation_m}m · ${DIFFICULTY_LABEL[b.difficulty]}`
+  );
+
+  let activeDifficulty = 'all';
+  let activeBrackets   = [];
+
+  function renderCards() {
+    const list = document.getElementById('items-list');
+
+    const filtered = BIKES.filter(b => {
+      const diffOk = activeDifficulty === 'all'
+        || b.difficulty === activeDifficulty;
+
+      const distOk = activeBrackets.length === 0
+        || activeBrackets.some(br =>
+            b.distance_km >= br.min && b.distance_km < br.max);
+
+      return diffOk && distOk;
+    });
+
+    if (filtered.length === 0) {
+      list.innerHTML = '<p class="no-results">No routes match these filters.</p>';
+      return;
+    }
+
+    list.innerHTML = filtered.map(b => `
+      <a class="route-card"
+         id="card-${sanitize(b.id)}"
+         href="bike-detail.html?id=${sanitize(b.id)}">
+        <div class="route-card-image">
+          ${b.image
+            ? `<img src="${sanitize(b.image)}" alt="${sanitize(b.name)}">`
+            : '<i class="ph-light ph-bicycle" style="font-size:1.8rem;color:var(--muted)"></i>'}
+        </div>
+        <div class="route-card-body">
+          <div class="route-card-title">${sanitize(b.name)}</div>
+          <div class="route-card-stats">
             <span class="stat"><i class="ph-light ph-ruler"></i> ${sanitize(String(b.distance_km))} km</span>
             <span class="stat"><i class="ph-light ph-trend-up"></i> ${sanitize(String(b.elevation_m))} m</span>
             <span class="stat"><i class="ph-light ph-path"></i> ${sanitize(b.surface)}</span>
-            </div>
-            <div class="route-card-badges">
-              ${difficultyBadge(b.difficulty)}
-              ${officialBadge(b)}
-            </div>
-            <div class="route-card-desc">${sanitize(b.description)}</div>
           </div>
-        </a>
-      `).join('');
-    }
-  
-    renderCards('all');
-    setupFilters(renderCards);
+          <div class="route-card-badges">
+            ${difficultyBadge(b.difficulty)}
+            ${officialBadge(b)}
+          </div>
+          <div class="route-card-desc">${sanitize(b.description)}</div>
+        </div>
+      </a>
+    `).join('');
   }
-  
+
+  // Difficulty — single select
+  document.querySelectorAll('.filter-btn:not(.bracket)').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn:not(.bracket)')
+        .forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeDifficulty = btn.dataset.filter;
+      renderCards();
+    });
+  });
+
+  // Distance brackets — multi select
+  document.querySelectorAll('.filter-btn.bracket').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('active');
+
+      activeBrackets = Array.from(
+        document.querySelectorAll('.filter-btn.bracket.active')
+      ).map(b => ({
+        min: parseFloat(b.dataset.min),
+        max: parseFloat(b.dataset.max)
+      }));
+
+      renderCards();
+    });
+  });
+
+  renderCards();
+}
   
   // ── CAFES LIST PAGE ───────────────────────────────────────────
   // Builds the overview map and card list on cafes.html.
@@ -932,6 +1081,9 @@ function buildCafeDetailPage() {
       <p>${sanitize(item.description)}</p>
     </div>
 
+    <!-- Info grid + feature tags -->
+    ${buildCafeInfoHTML(item)}
+
     <!-- Menu highlights — only shown if array has items -->
     ${item.menu_highlights && item.menu_highlights.length > 0 ? `
     <div class="detail-section">
@@ -1010,7 +1162,9 @@ function buildCafeDetailPage() {
       <div class="detail-header">
         <div class="detail-title">${sanitize(item.name)}</div>
         <div class="detail-badges">
-          <span class="badge badge-type">${sanitize(item.type)}</span>
+        <span class="badge badge-type">${sanitize(c.type)}</span>
+        ${c.vibe ? `<span class="badge badge-vibe">${sanitize(c.vibe)}</span>` : ''}
+        ${priceDisplay(c.price_range)}
         </div>
       </div>
   

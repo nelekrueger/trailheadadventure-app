@@ -16,7 +16,7 @@
       </a>
       <div class="header-text">
         <div class="logo">
-          <i class="ph-light ph-boot"></i> Hikes & trail runs
+          <i class="ph-light ph-sneaker"></i> Hikes & trail runs
         </div>
       </div>
       <span class="header-count" id="page-count"></span>
@@ -24,12 +24,34 @@
   </header>
   <main>
     <div id="hikes-map" class="overview-map"></div>
-    <div class="filter-bar">
-      <span class="filter-label">Difficulty</span>
-      <button class="filter-btn active" data-filter="all">All</button>
-      <button class="filter-btn" data-filter="easy">Easy</button>
-      <button class="filter-btn" data-filter="medium">Medium</button>
-      <button class="filter-btn" data-filter="hard">Hard</button>
+    <div class="filter-row">
+
+      <!-- Difficulty — single select -->
+      <div class="filter-bar">
+        <span class="filter-label">Difficulty</span>
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="easy">Easy</button>
+        <button class="filter-btn" data-filter="medium">Medium</button>
+        <button class="filter-btn" data-filter="hard">Hard</button>
+      </div>
+    
+      <!-- Distance brackets — multi select -->
+      <div class="filter-bar" id="distance-filters">
+        <span class="filter-label">Distance</span>
+        <button class="filter-btn bracket" data-min="0"  data-max="10">
+          <i class="ph-light ph-ruler"></i> Under 10 km
+        </button>
+        <button class="filter-btn bracket" data-min="10" data-max="20">
+          10–20 km
+        </button>
+        <button class="filter-btn bracket" data-min="20" data-max="35">
+          20–35 km
+        </button>
+        <button class="filter-btn bracket" data-min="35" data-max="9999">
+          35 km+
+        </button>
+      </div>
+    
     </div>
     <div class="items-list" id="items-list"></div>
   </main>

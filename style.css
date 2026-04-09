@@ -694,3 +694,116 @@
     .overview-map { height: 190px; }
     #map          { height: 340px; }
   }
+
+  /* ── DISTANCE FILTER BRACKETS ────────────────────────────────
+   Multi-select pills shown below the difficulty filter bar
+   on hikes and bikes list pages                             */
+
+.filter-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Active multi-select bracket pills use outline style
+   so they're visually distinct from the single-select
+   difficulty pills above                                    */
+.filter-btn.bracket.active {
+  background: transparent;
+  border-color: currentColor;
+  color: var(--ink);
+}
+
+body.page-hikes .filter-btn.bracket.active {
+  border-color: var(--hike);
+  color: var(--hike);
+  background: rgba(107,124,94,0.08);
+}
+
+body.page-bikes .filter-btn.bracket.active {
+  border-color: var(--bike);
+  color: var(--bike);
+  background: rgba(107,120,112,0.08);
+}
+
+/* ── CAFE DETAIL — INFO GRID ─────────────────────────────────
+   Compact info cards for price, vibe, and feature tags.
+   Beige surface, restrained — never more than 2 lines.    */
+
+   .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.5rem;
+  }
+  
+  .info-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  
+  .info-card-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  
+  .info-card-value {
+    font-size: 0.85rem;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--border);
+  }
+  
+  /* Green tint for positive attributes */
+  .tag-yes {
+    background: #eaede4;
+    border-color: #c8d4bc;
+    color: #3d5c30;
+  }
+  
+  /* Neutral for payment restrictions */
+  .tag-payment {
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--muted);
+  }
+  
+  /* Price display */
+  .price-range .active   { color: var(--ink); font-weight: 600; }
+  .price-range .inactive { color: var(--border); }
+  
+  /* Vibe badge on list cards */
+  .badge-vibe {
+    background: var(--surface);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    font-style: italic;
+  }

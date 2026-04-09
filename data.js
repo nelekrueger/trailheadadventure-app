@@ -166,6 +166,14 @@ const HIKES = [
       description: "Cozy woodland cafe with great cardamom buns and proper filter coffee.",
       menu_highlights: ["Cardamom buns", "Filter coffee", "Soup of the day"],
       images: [],
+      price_range:     1,
+      vibe:            "Cozy cabin cafe",
+      outdoor_seating: true,
+      cash_only:       false,
+      swish_only:      true,
+      dog_friendly:    true,
+      vegetarian:      true,
+      vegan:           false,
       lat: 59.320,
       lng: 18.050
     },
@@ -176,6 +184,14 @@ const HIKES = [
       description: "Tiny espresso bar popular with runners and cyclists. Cash only.",
       menu_highlights: ["Espresso", "Banana bread", "Energy balls"],
       images: [],
+      price_range:     1,
+      vibe:            "Espresso bar",
+      outdoor_seating: true,
+      cash_only:       true,
+      swish_only:      false,
+      dog_friendly:    true,
+      vegetarian:      true,
+      vegan:           true,
       lat: 59.340,
       lng: 18.090
     },
@@ -186,11 +202,18 @@ const HIKES = [
       description: "Rustic restaurant with a locally sourced seasonal menu.",
       menu_highlights: ["Wild mushroom pasta", "Elk burger", "Local craft beer"],
       images: [],
+      price_range:     2,
+      vibe:            "Casual restaurant",
+      outdoor_seating: true,
+      cash_only:       false,
+      swish_only:      false,
+      dog_friendly:    false,
+      vegetarian:      true,
+      vegan:           true,
       lat: 59.310,
       lng: 18.120
     }
   ];
-  
   
   // ── CAMPS, SHELTERS & FIRE SPOTS ─────────────────────────────
   // Fields:

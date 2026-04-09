@@ -24,12 +24,34 @@
   </header>
   <main>
     <div id="bikes-map" class="overview-map"></div>
-    <div class="filter-bar">
-      <span class="filter-label">Difficulty</span>
-      <button class="filter-btn active" data-filter="all">All</button>
-      <button class="filter-btn" data-filter="easy">Easy</button>
-      <button class="filter-btn" data-filter="medium">Medium</button>
-      <button class="filter-btn" data-filter="hard">Hard</button>
+    <div class="filter-row">
+
+      <!-- Difficulty — single select -->
+      <div class="filter-bar">
+        <span class="filter-label">Difficulty</span>
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="easy">Easy</button>
+        <button class="filter-btn" data-filter="medium">Medium</button>
+        <button class="filter-btn" data-filter="hard">Hard</button>
+      </div>
+    
+      <!-- Distance brackets — multi select -->
+      <div class="filter-bar" id="distance-filters">
+        <span class="filter-label">Distance</span>
+        <button class="filter-btn bracket" data-min="0"   data-max="30">
+          <i class="ph-light ph-ruler"></i> Under 30 km
+        </button>
+        <button class="filter-btn bracket" data-min="30"  data-max="60">
+          30–60 km
+        </button>
+        <button class="filter-btn bracket" data-min="60"  data-max="100">
+          60–100 km
+        </button>
+        <button class="filter-btn bracket" data-min="100" data-max="9999">
+          100 km+
+        </button>
+      </div>
+    
     </div>
     <div class="items-list" id="items-list"></div>
   </main>
