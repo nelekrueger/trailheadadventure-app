@@ -102,6 +102,55 @@ function priceDisplay(level) {
   </span>`;
 }
 
+// ── CAMP FEE DISPLAY ──────────────────────────────────────────
+// Same $ convention as cafes. 0 = free, 1-3 = price level.
+// Shows "Free" badge for 0, $ symbols for paid.
+
+function campFeeDisplay(fee) {
+  if (!fee || fee === 0) {
+    return `<span class="badge badge-free">
+      <i class="ph-light ph-check"></i> Free
+    </span>`;
+  }
+  const active = '$'.repeat(fee);
+  const faded  = '$'.repeat(3 - fee);
+  return `<span class="badge badge-fee">
+    <span style="font-weight:700">${active}</span><span style="opacity:0.3">${faded}</span>
+  </span>`;
+}
+
+// ── CAMP BOOKING DISPLAY ──────────────────────────────────────
+// Returns a badge for the three booking states.
+
+function campBookingDisplay(booking) {
+  if (booking === 'first_come') {
+    return `<span class="badge badge-first-come">
+      <i class="ph-light ph-clock"></i> First come first served
+    </span>`;
+  }
+  if (booking === 'required') {
+    return `<span class="badge badge-booking">
+      <i class="ph-light ph-calendar-check"></i> Booking required
+    </span>`;
+  }
+  if (booking === 'recommended') {
+    return `<span class="badge badge-recommended">
+      <i class="ph-light ph-calendar"></i> Booking recommended
+    </span>`;
+  }
+  return '';
+}
+
+// ── CAMP TAGS ─────────────────────────────────────────────────
+// Returns dog friendly and car accessible badges.
+
+function campTags(item) {
+  return [
+    item.dog_friendly   ? `<span class="badge badge-dog"><i class="ph-light ph-paw-print"></i> Dogs welcome</span>`    : '',
+    item.car_accessible ? `<span class="badge badge-car"><i class="ph-light ph-car"></i> Car accessible</span>` : '',
+  ].filter(Boolean).join('');
+}
+
 
 // ── CAFE INFO GRID ────────────────────────────────────────────
 // Builds the info cards and feature tags for a cafe detail page.
@@ -189,10 +238,11 @@ function buildCafeInfoHTML(item) {
   
   // One icon per category — reused on every map in the app
   const ICONS = {
-    hikes: makeIcon('<i class="ph-light ph-sneaker"></i>',       '#6b7c5e'),
-    bikes: makeIcon('<i class="ph-light ph-bicycle"></i>',    '#6b7870'),
-    cafes: makeIcon('<i class="ph-light ph-fork-knife"></i>', '#9c7d58'),
-    camps: makeIcon('<i class="ph-light ph-tent"></i>',       '#8c6e58')
+    hikes:     makeIcon('<i class="ph-light ph-sneaker"></i>',    '#5c7a4e'),
+    bikes:     makeIcon('<i class="ph-light ph-bicycle"></i>',    '#4a7a8a'),
+    cafes:     makeIcon('<i class="ph-light ph-fork-knife"></i>', '#a07840'),
+    camps:     makeIcon('<i class="ph-light ph-tent"></i>',       '#7a5c3a'),
+    firespots: makeIcon('<i class="ph-light ph-flame"></i>',      '#b84a20')
   };
   
   
@@ -287,10 +337,11 @@ function buildCafeInfoHTML(item) {
     if (!mapEl) return;
   
     // Fill in counts on the four category cards
-    document.getElementById('count-hikes').textContent = `${HIKES.length} routes`;
-    document.getElementById('count-bikes').textContent = `${BIKES.length} routes`;
-    document.getElementById('count-cafes').textContent = `${CAFES.length} places`;
-    document.getElementById('count-camps').textContent = `${CAMPS.length} spots`;
+    document.getElementById('count-hikes').textContent     = `${HIKES.length} routes`;
+    document.getElementById('count-bikes').textContent     = `${BIKES.length} routes`;
+    document.getElementById('count-cafes').textContent     = `${CAFES.length} places`;
+    document.getElementById('count-camps').textContent     = `${CAMPS.length} spots`;
+    document.getElementById('count-firespots').textContent = `${FIRESPOTS.length} spots`;
   
     const map = L.map('map', { center: [59.270, 18.120], zoom: 10 });
   
@@ -303,10 +354,11 @@ function buildCafeInfoHTML(item) {
     // Each category gets its own layer group so we can
     // show/hide it independently with the filter buttons
     const layers = {
-      hikes: L.layerGroup().addTo(map),
-      bikes: L.layerGroup().addTo(map),
-      cafes: L.layerGroup().addTo(map),
-      camps: L.layerGroup().addTo(map)
+      hikes:     L.layerGroup().addTo(map),
+      bikes:     L.layerGroup().addTo(map),
+      cafes:     L.layerGroup().addTo(map),
+      camps:     L.layerGroup().addTo(map),
+      firespots: L.layerGroup().addTo(map)
     };
   
     // Adds markers for one category into its layer
@@ -333,6 +385,9 @@ function buildCafeInfoHTML(item) {
       c => c.type);
     addMarkersToLayer(CAMPS, 'camps', 'camp-detail.html',
       c => c.type);
+      // Fire spots layer
+    addMarkersToLayer(FIRESPOTS, 'firespots', 'firespot-detail.html',
+    f => f.type.replace(/_/g, ' '));
   
     // Filter toggle buttons — show/hide each category layer
     document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -629,30 +684,166 @@ function buildBikesPage() {
       }
   
       list.innerHTML = filtered.map(c => `
-        <a class="camp-card"
-           id="card-${sanitize(c.id)}"
-           href="camp-detail.html?id=${sanitize(c.id)}">
-          <div class="camp-card-image">
-            ${c.image
-              ? `<img src="${sanitize(c.image)}" alt="${sanitize(c.name)}">`
-              : '<i class="ph-light ph-tent" style="font-size:1.8rem;color:var(--muted)"></i>'}
-          </div>
-          <div class="camp-card-body">
-            <div class="camp-card-title">${sanitize(c.name)}</div>
-            <span class="badge badge-type">${sanitize(c.type)}</span>
-            <div class="camp-card-desc">${sanitize(c.description)}</div>
-            <div class="camp-card-facilities">
-              ${facilityBadges(c.facilities)}
-            </div>
-          </div>
-        </a>
-      `).join('');
+  <a class="camp-card"
+     id="card-${sanitize(c.id)}"
+     href="camp-detail.html?id=${sanitize(c.id)}">
+    <div class="camp-card-image">
+      ${c.image
+        ? `<img src="${sanitize(c.image)}" alt="${sanitize(c.name)}">`
+        : '<i class="ph-light ph-tent" style="font-size:1.8rem;color:var(--muted)"></i>'}
+    </div>
+    <div class="camp-card-body">
+      <div class="camp-card-title">${sanitize(c.name)}</div>
+
+      <!-- Type + fee + booking on one line -->
+      <div class="route-card-badges">
+        <span class="badge badge-type">${sanitize(c.type)}</span>
+        ${campFeeDisplay(c.fee)}
+        ${campBookingDisplay(c.booking)}
+      </div>
+
+      <div class="camp-card-desc">${sanitize(c.description)}</div>
+
+      <!-- Dog + car badges -->
+      <div class="camp-card-facilities">
+        ${campTags(c)}
+        ${facilityBadges(c.facilities)}
+      </div>
+    </div>
+  </a>
+`).join('');
     }
   
     renderCards('all');
     setupFilters(renderCards);
   }
-  
+
+
+  // ── FIRE SPOTS LIST PAGE ──────────────────────────────────────
+// Runs on firespots.html.
+// Two filter types:
+//   type filter    — single select (all / official_bbq / official_firepit / unofficial)
+//   feature filter — multi select (seating / firewood provided / year round)
+
+function buildFirespotsPage() {
+  const mapEl = document.getElementById('firespots-map');
+  if (!mapEl) return;
+
+  document.getElementById('page-count').textContent = `${FIRESPOTS.length} spots`;
+
+  buildOverviewMap('firespots-map', FIRESPOTS, 'firespots',
+    f => f.type.replace(/_/g, ' ')
+  );
+
+  // Human-readable type labels
+  const TYPE_LABELS = {
+    official_bbq:     'Official BBQ',
+    official_firepit: 'Official fire pit',
+    unofficial:       'Unofficial spot'
+  };
+
+  // Human-readable seating labels
+  const SEATING_LABELS = {
+    benches_and_table: 'Table & benches',
+    benches_only:      'Benches',
+    logs:              'Logs',
+    none:              'No seating'
+  };
+
+  // Badge class per type
+  const TYPE_BADGE = {
+    official_bbq:     'badge-official-bbq',
+    official_firepit: 'badge-official-firepit',
+    unofficial:       'badge-unofficial'
+  };
+
+  let activeType     = 'all';
+  let activeFeatures = []; // array of feature strings
+
+  function renderCards() {
+    const list = document.getElementById('items-list');
+
+    const filtered = FIRESPOTS.filter(f => {
+      // Type filter
+      const typeOk = activeType === 'all' || f.type === activeType;
+
+      // Feature filters — passes if ALL selected features match
+      const featuresOk = activeFeatures.every(feat => {
+        if (feat === 'seating')    return f.seating !== 'none';
+        if (feat === 'firewood')   return f.firewood === 'provided';
+        if (feat === 'year_round') return f.season === 'year_round';
+        return true;
+      });
+
+      return typeOk && featuresOk;
+    });
+
+    if (filtered.length === 0) {
+      list.innerHTML = '<p class="no-results">No fire spots match these filters.</p>';
+      return;
+    }
+
+    list.innerHTML = filtered.map(f => `
+      <a class="firespot-card"
+         id="card-${sanitize(f.id)}"
+         href="firespot-detail.html?id=${sanitize(f.id)}">
+
+        <div class="firespot-card-image">
+          ${f.image
+            ? `<img src="${sanitize(f.image)}" alt="${sanitize(f.name)}">`
+            : '<i class="ph-light ph-flame" style="font-size:1.8rem"></i>'}
+        </div>
+
+        <div class="firespot-card-body">
+          <div class="firespot-card-title">${sanitize(f.name)}</div>
+
+          <div class="firespot-card-tags">
+            <span class="badge ${TYPE_BADGE[f.type] || 'badge-type'}">
+              ${sanitize(TYPE_LABELS[f.type] || f.type)}
+            </span>
+            ${f.seating !== 'none'
+              ? `<span class="badge badge-facility">
+                   <i class="ph-light ph-park"></i>
+                   ${sanitize(SEATING_LABELS[f.seating] || f.seating)}
+                 </span>`
+              : ''}
+            ${f.firewood === 'provided'
+              ? `<span class="badge badge-facility">
+                   <i class="ph-light ph-tree"></i> Wood provided
+                 </span>`
+              : ''}
+          </div>
+
+          <div class="firespot-card-desc">${sanitize(f.description)}</div>
+        </div>
+      </a>
+    `).join('');
+  }
+
+  // Type filter — single select
+  document.querySelectorAll('.filter-btn:not(.bracket)').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn:not(.bracket)')
+        .forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeType = btn.dataset.filter;
+      renderCards();
+    });
+  });
+
+  // Feature filters — multi select
+  document.querySelectorAll('.filter-btn.bracket').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('active');
+      activeFeatures = Array.from(
+        document.querySelectorAll('.filter-btn.bracket.active')
+      ).map(b => b.dataset.feature);
+      renderCards();
+    });
+  });
+
+  renderCards();
+}
   
   // ── DETAIL PAGE: ROUTE (hike or bike) ────────────────────────
   // Runs on hike-detail.html and bike-detail.html.
@@ -692,7 +883,7 @@ function buildBikesPage() {
   
     // Update header title and browser tab
     document.getElementById('detail-title').textContent = item.name;
-    document.title = `${item.name} — Trailhead`;
+    document.title = `${item.name} — Paws & Trails`;
   
     // Find nearby camp spots listed in shelters_nearby
     const nearbyCamps = (item.shelters_nearby || [])
@@ -1034,7 +1225,7 @@ function buildCafeDetailPage() {
   }
 
   document.getElementById('detail-title').textContent = item.name;
-  document.title = `${item.name} — Trailhead`;
+  document.title = `${item.name} — Paws & Trails`;
 
   // Google Maps deep link using coordinates
   const mapsUrl = `https://maps.google.com/?q=${item.lat},${item.lng}`;
@@ -1138,7 +1329,7 @@ function buildCafeDetailPage() {
     }
   
     document.getElementById('detail-title').textContent = item.name;
-    document.title = `${item.name} — Trailhead`;
+    document.title = `${item.name} — Paws & Trails`;
   
     const mapsUrl =
       `https://maps.google.com/?q=${item.lat},${item.lng}`;
@@ -1162,10 +1353,10 @@ function buildCafeDetailPage() {
       <div class="detail-header">
         <div class="detail-title">${sanitize(item.name)}</div>
         <div class="detail-badges">
-        <span class="badge badge-type">${sanitize(c.type)}</span>
-        ${c.vibe ? `<span class="badge badge-vibe">${sanitize(c.vibe)}</span>` : ''}
-        ${priceDisplay(c.price_range)}
-        </div>
+        <span class="badge badge-type">${sanitize(item.type)}</span>
+        ${campFeeDisplay(item.fee)}
+        ${campBookingDisplay(item.booking)}
+      </div>
       </div>
   
       <!-- Map pin -->
@@ -1185,14 +1376,14 @@ function buildCafeDetailPage() {
         <p>${sanitize(item.description)}</p>
       </div>
   
-      <!-- Facilities badges -->
-      ${item.facilities && item.facilities.length > 0 ? `
+      <!-- Facilities + dog + car -->
       <div class="detail-section">
-        <h3>Facilities</h3>
+        <h3>Good to know</h3>
         <div style="display:flex; flex-wrap:wrap; gap:0.5rem; padding-top:0.25rem">
+          ${campTags(item)}
           ${facilityBadges(item.facilities)}
         </div>
-      </div>` : ''}
+      </div>
   
       <!-- Routes that pass near this camp — linked back to their detail pages -->
       ${linkedRoutes.length > 0 ? `
@@ -1235,40 +1426,268 @@ function buildCafeDetailPage() {
       .addTo(map);
   }
   
+  // ── DETAIL PAGE: FIRE SPOT ────────────────────────────────────
+// Runs on firespot-detail.html.
+// Shows fire status warning, facilities, map pin,
+// nearby camps and nearby trail routes.
+
+function buildFirespotDetailPage() {
+  const mainEl = document.getElementById('detail-main');
+  if (!mainEl) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const id     = params.get('id');
+  const item   = FIRESPOTS.find(f => f.id === id);
+
+  const backBtn = document.querySelector('.back-btn');
+  if (backBtn) backBtn.href = 'firespots.html';
+
+  if (!item) {
+    document.getElementById('detail-title').textContent = 'Not found';
+    mainEl.innerHTML = `
+      <div class="not-found">
+        <h2>Fire spot not found</h2>
+        <p><a href="firespots.html">← Go back</a></p>
+      </div>`;
+    return;
+  }
+
+  document.getElementById('detail-title').textContent = item.name;
+  document.title = `${item.name} — Paws & Trails`;
+
+  const mapsUrl = `https://maps.google.com/?q=${item.lat},${item.lng}`;
+
+  // Human readable labels
+  const TYPE_LABELS = {
+    official_bbq:     'Official BBQ',
+    official_firepit: 'Official fire pit',
+    unofficial:       'Unofficial spot'
+  };
+
+  const SEATING_LABELS = {
+    benches_and_table: 'Table & benches',
+    benches_only:      'Benches',
+    logs:              'Logs only',
+    none:              'No seating'
+  };
+
+  const FIREWOOD_LABELS = {
+    provided:   'Firewood provided',
+    buy_nearby: 'Buy nearby',
+    bring_own:  'Bring your own'
+  };
+
+  const SEASON_LABELS = {
+    year_round:   'Year round',
+    summer_only:  'Summer only',
+    winter_only:  'Winter only'
+  };
+
+  const TYPE_BADGE = {
+    official_bbq:     'badge-official-bbq',
+    official_firepit: 'badge-official-firepit',
+    unofficial:       'badge-unofficial'
+  };
+
+  // Fire status banner — shown at top of page
+  const fireStatusHTML = item.fire_status === 'always_allowed'
+    ? `<div class="fire-ok">
+         <i class="ph-light ph-check-circle fire-ok-icon"></i>
+         Fires always permitted at this designated spot.
+       </div>`
+    : `<div class="fire-warning">
+         <i class="ph-light ph-warning fire-warning-icon"></i>
+         <span>
+           ${item.fire_status === 'seasonal_ban_possible'
+             ? 'Fire bans are possible here during dry periods.'
+             : 'Always check current fire restrictions before lighting.'}
+           Check <a href="https://www.krisinformation.se" target="_blank" rel="noopener">krisinformation.se</a> for active bans.
+         </span>
+       </div>`;
+
+  // Facility tags
+  const facilityTags = [
+    item.grill_mesh    ? `<span class="tag tag-yes"><i class="ph-light ph-fire"></i> Grill mesh</span>`          : '',
+    item.water_nearby  ? `<span class="tag tag-yes"><i class="ph-light ph-drop"></i> Water nearby</span>`        : '',
+    item.toilet_nearby ? `<span class="tag tag-yes"><i class="ph-light ph-toilet-paper"></i> Toilet nearby</span>` : '',
+    item.parking       ? `<span class="tag tag-yes"><i class="ph-light ph-parking-sign"></i> Parking</span>`     : '',
+  ].filter(Boolean).join('');
+
+  // Find linked camps from nearby_camps array
+  const nearbyCamps = (item.nearby_camps || [])
+    .map(id => CAMPS.find(c => c.id === id))
+    .filter(Boolean);
+
+  // Find linked trails from nearby_trails array
+  const nearbyTrails = (item.nearby_trails || [])
+    .map(id => {
+      const hike = HIKES.find(h => h.id === id);
+      const bike = BIKES.find(b => b.id === id);
+      return hike ? { ...hike, category: 'hike' }
+           : bike ? { ...bike, category: 'bike' }
+           : null;
+    })
+    .filter(Boolean);
+
+  mainEl.innerHTML = `
+
+    <!-- Fire ban status — always shown at top -->
+    ${fireStatusHTML}
+
+    <!-- Cover image or flame icon placeholder -->
+    <div class="detail-cover">
+      ${item.image
+        ? `<img src="${sanitize(item.image)}" alt="${sanitize(item.name)}">`
+        : '<i class="ph-light ph-flame" style="font-size:3rem;color:#9c7040"></i>'}
+    </div>
+
+    <!-- Title and type badge -->
+    <div class="detail-header">
+      <div class="detail-title">${sanitize(item.name)}</div>
+      <div class="detail-badges">
+        <span class="badge ${TYPE_BADGE[item.type] || 'badge-type'}">
+          ${sanitize(TYPE_LABELS[item.type] || item.type)}
+        </span>
+      </div>
+    </div>
+
+    <!-- Key info grid -->
+    <div class="info-grid">
+
+      <div class="info-card">
+        <span class="info-card-label">
+          <i class="ph-light ph-park"></i> Seating
+        </span>
+        <span class="info-card-value">
+          ${sanitize(SEATING_LABELS[item.seating] || item.seating)}
+        </span>
+      </div>
+
+      <div class="info-card">
+        <span class="info-card-label">
+          <i class="ph-light ph-tree"></i> Firewood
+        </span>
+        <span class="info-card-value">
+          ${sanitize(FIREWOOD_LABELS[item.firewood] || item.firewood)}
+        </span>
+      </div>
+
+      <div class="info-card">
+        <span class="info-card-label">
+          <i class="ph-light ph-calendar"></i> Season
+        </span>
+        <span class="info-card-value">
+          ${sanitize(SEASON_LABELS[item.season] || item.season)}
+        </span>
+      </div>
+
+    </div>
+
+    <!-- Map pin -->
+    <div id="detail-map" class="detail-map"></div>
+
+    <!-- Open in Google Maps -->
+    <a class="maps-link"
+       href="${sanitize(mapsUrl)}"
+       target="_blank"
+       rel="noopener noreferrer">
+      <i class="ph-light ph-map-pin"></i> Open in Google Maps
+    </a>
+
+    <!-- Description -->
+    <div class="detail-section">
+      <h3>About this spot</h3>
+      <p>${sanitize(item.description)}</p>
+    </div>
+
+    <!-- Facilities -->
+    ${facilityTags ? `
+    <div class="detail-section">
+      <h3>Facilities</h3>
+      <div class="tag-row">${facilityTags}</div>
+    </div>` : ''}
+
+    <!-- Nearby camps -->
+    ${nearbyCamps.length > 0 ? `
+    <div class="detail-section">
+      <h3>Nearby camps & shelters</h3>
+      <div class="nearby-list">
+        ${nearbyCamps.map(c => `
+          <a class="nearby-item" href="camp-detail.html?id=${sanitize(c.id)}">
+            <span class="nearby-item-icon">
+              <i class="ph-light ph-tent"></i>
+            </span>
+            <span class="nearby-item-name">${sanitize(c.name)}</span>
+            <span class="nearby-item-type">${sanitize(c.type)}</span>
+          </a>
+        `).join('')}
+      </div>
+    </div>` : ''}
+
+    <!-- Nearby trails -->
+    ${nearbyTrails.length > 0 ? `
+    <div class="detail-section">
+      <h3>Nearby routes</h3>
+      <div class="nearby-list">
+        ${nearbyTrails.map(r => `
+          <a class="nearby-item"
+             href="${r.category}-detail.html?id=${sanitize(r.id)}">
+            <span class="nearby-item-icon">
+              <i class="ph-light ${r.category === 'hike' ? 'ph-sneaker' : 'ph-bicycle'}"></i>
+            </span>
+            <span class="nearby-item-name">${sanitize(r.name)}</span>
+            <span class="nearby-item-type">${sanitize(String(r.distance_km))} km</span>
+          </a>
+        `).join('')}
+      </div>
+    </div>` : ''}
+
+  `;
+
+  // Pin map
+  const map = L.map('detail-map').setView([item.lat, item.lng], 14);
+
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19
+  }).addTo(map);
+
+  L.marker([item.lat, item.lng], { icon: ICONS.firespots })
+    .bindPopup(`
+      <div class="popup-title">${sanitize(item.name)}</div>
+      <div class="popup-meta">${sanitize(TYPE_LABELS[item.type] || item.type)}</div>
+    `)
+    .openPopup()
+    .addTo(map);
+}
   
   // ── INIT ──────────────────────────────────────────────────────
-  // Detects which page is open by reading the filename from
-  // the URL, then runs exactly one build function.
-  // This is more reliable than having every function
-  // self-detect via element IDs.
-  
-  const currentPage = window.location.pathname.split('/').pop();
-  
-  if (currentPage === 'index.html' || currentPage === '') {
-    buildHomePage();
-  
-  } else if (currentPage === 'hikes.html') {
-    buildHikesPage();
-  
-  } else if (currentPage === 'bikes.html') {
-    buildBikesPage();
-  
-  } else if (currentPage === 'cafes.html') {
-    buildCafesPage();
-  
-  } else if (currentPage === 'camps.html') {
-    buildCampsPage();
-  
-  } else if (currentPage === 'hike-detail.html') {
-    // Pass the HIKES dataset, the back URL, and the category name
-    buildRouteDetailPage(HIKES, 'hikes.html', 'hikes');
-  
-  } else if (currentPage === 'bike-detail.html') {
-    buildRouteDetailPage(BIKES, 'bikes.html', 'bikes');
-  
-  } else if (currentPage === 'cafe-detail.html') {
-    buildCafeDetailPage();
-  
-  } else if (currentPage === 'camp-detail.html') {
-    buildCampDetailPage();
-  }
+// Detects current page by filename and runs exactly one
+// build function. Each function exits immediately if its
+// key element isn't found on the page.
+
+const currentPage = window.location.pathname.split('/').pop();
+
+if (currentPage === 'index.html' || currentPage === '') {
+  buildHomePage();
+} else if (currentPage === 'hikes.html') {
+  buildHikesPage();
+} else if (currentPage === 'bikes.html') {
+  buildBikesPage();
+} else if (currentPage === 'cafes.html') {
+  buildCafesPage();
+} else if (currentPage === 'camps.html') {
+  buildCampsPage();
+} else if (currentPage === 'firespots.html') {
+  buildFirespotsPage();
+} else if (currentPage === 'hike-detail.html') {
+  buildRouteDetailPage(HIKES, 'hikes.html', 'hikes');
+} else if (currentPage === 'bike-detail.html') {
+  buildRouteDetailPage(BIKES, 'bikes.html', 'bikes');
+} else if (currentPage === 'cafe-detail.html') {
+  buildCafeDetailPage();
+} else if (currentPage === 'camp-detail.html') {
+  buildCampDetailPage();
+} else if (currentPage === 'firespot-detail.html') {
+  buildFirespotDetailPage();
+}

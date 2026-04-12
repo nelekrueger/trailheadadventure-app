@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trailhead</title>
+  <title>Paws & Trails</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <!-- Phosphor Icons — light weight, free, no license required -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/light/style.css"/>
@@ -15,21 +15,46 @@
     <div class="header-inner">
       <div class="header-text">
         <div class="logo">
-          <i class="ph-light ph-mountains"></i>
-          Trailhead
+          <i class="ph-light ph-paw-print"></i>
+          Paws & Trails
         </div>
-        <p class="tagline">Handpicked routes, camps and places in the wild</p>
       </div>
     </div>
   </header>
 
   <main>
 
+    <main>
+
+      <!-- ── INTRO ───────────────────────────────────────────────
+           Personal introduction — shown only on the home page.
+           Sits above the map and category cards.
+      ──────────────────────────────────────────────────────── -->
+      <section class="intro-section">
+        <h1 class="intro-headline">Adventures in and around Alingsås, Sweden</h1>
+        <p class="intro-body">
+          Trails, gravel routes, fire spots, shelters, camp sites and good coffee stops,
+          all handpicked by <em>a German who made Alingsås home</em>, and her four-legged co-explorer.
+          We moved here, got wonderfully lost a few times, and decided to put everything
+          we found on one map. Hike it, ride it, sit by a fire, grab a fika.
+        </p>
+        <p class="intro-body">
+          <em>New spots get added as we explore.</em>
+        </p>
+        <div class="intro-divider"></div>
+      </section>
+    
+      <!-- ── MAP SECTION ─────────────────────────────────────── -->
+      <section class="map-section">
+    
+      <!-- ── MAP SECTION ─────────────────────────────────────── -->
+      <section class="map-section">
+
     <section class="map-section">
       <!-- Filter toggles — data-category matches layer keys in app.js -->
       <div class="filter-bar">
         <button class="filter-btn active" data-category="hikes">
-          <i class="ph-light ph-boot"></i> Hikes & runs
+          <i class="ph-light ph-sneaker"></i> Hikes & runs
         </button>
         <button class="filter-btn active" data-category="bikes">
           <i class="ph-light ph-bicycle"></i> Bike routes
@@ -40,7 +65,12 @@
         <button class="filter-btn active" data-category="camps">
           <i class="ph-light ph-tent"></i> Camps
         </button>
+        <!-- New fire spots toggle -->
+        <button class="filter-btn active" data-category="firespots">
+          <i class="ph-light ph-flame"></i> Fire spots
+        </button>
       </div>
+
       <!-- Map rendered by buildHomePage() in app.js -->
       <div id="map"></div>
     </section>
@@ -71,6 +101,12 @@
           <i class="ph-light ph-tent cat-icon"></i>
           <span class="cat-name">Camps & shelters</span>
           <span class="cat-count" id="count-camps">— spots</span>
+        </a>
+
+        <a href="firespots.html" class="category-card firespots">
+          <i class="ph-light ph-flame cat-icon"></i>
+          <span class="cat-name">Fire spots</span>
+          <span class="cat-count" id="count-firespots">— spots</span>
         </a>
 
       </div>

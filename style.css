@@ -13,10 +13,11 @@
   /* ── DESIGN TOKENS ───────────────────────────────────────────
      Change colours here to update the whole app at once       */
   :root {
-    --hike:      #6b7c5e;   /* muted sage green */
-    --bike:      #6b7870;   /* muted slate grey-green */
-    --cafe:      #9c7d58;   /* warm tan */
-    --camp:      #8c6e58;   /* earthy terracotta */
+    --hike:      #5c7a4e;
+    --bike:      #4a7a8a;
+    --cafe:      #a07840;
+    --camp:      #7a5c3a;
+    --firespot:  #b84a20;
   
     --bg:        #f7f4ee;   /* warm off-white page background */
     --surface:   #f0ece0;   /* card/section background */
@@ -161,17 +162,11 @@
     color: white;
   }
   
-  body.page-hikes .filter-btn.active,
-  .map-section .filter-btn.active[data-category="hikes"] { background: var(--hike); }
-  
-  body.page-bikes .filter-btn.active,
-  .map-section .filter-btn.active[data-category="bikes"] { background: var(--bike); }
-  
-  body.page-cafes .filter-btn.active,
-  .map-section .filter-btn.active[data-category="cafes"] { background: var(--cafe); }
-  
-  body.page-camps .filter-btn.active,
-  .map-section .filter-btn.active[data-category="camps"] { background: var(--camp); }
+  .map-section .filter-btn.active[data-category="hikes"]     { background: var(--hike); }
+  .map-section .filter-btn.active[data-category="bikes"]     { background: var(--bike); }
+  .map-section .filter-btn.active[data-category="cafes"]     { background: var(--cafe); }
+  .map-section .filter-btn.active[data-category="camps"]     { background: var(--camp); }
+  .map-section .filter-btn.active[data-category="firespots"] { background: var(--firespot); }
   
   /* ── OVERVIEW MAP (sub-pages) ────────────────────────────────*/
   .overview-map {
@@ -222,10 +217,10 @@
     box-shadow: 0 4px 16px rgba(0,0,0,0.12);
   }
   
-  .category-card.hikes { background: var(--hike); }
-  .category-card.bikes { background: var(--bike); }
-  .category-card.cafes { background: var(--cafe); }
-  .category-card.camps { background: var(--camp); }
+  .category-card.hikes { background: #5c7a4e; }
+  .category-card.bikes { background: #4a7a8a; }
+  .category-card.cafes { background: #a07840; }
+  .category-card.camps { background: #7a5c3a; }
   
   .cat-icon  { font-size: 1.6rem; opacity: 0.95; }
   .cat-name  { font-size: 0.82rem; font-weight: 600; }
@@ -807,3 +802,165 @@ body.page-bikes .filter-btn.bracket.active {
     border: 1px solid var(--border);
     font-style: italic;
   }
+
+  /* ── FIRE SPOTS CATEGORY ─────────────────────────────────────
+   Warm amber tone to distinguish from other categories      */
+
+   .category-card.firespots { background: #b84a20; }
+
+   body.page-firespots .filter-btn.active          { background: #b84a20; }
+   body.page-firespots .filter-btn.bracket.active  {
+     background: rgba(184,74,32,0.08);
+     border-color: #b84a20;
+     color: #b84a20;
+   }
+
+/* Fire spot list card */
+.firespot-card {
+  display: flex;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.firespot-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 14px rgba(0,0,0,0.08);
+}
+
+.firespot-card.highlighted {
+  border-color: #9c7040;
+  box-shadow: 0 0 0 3px rgba(156,112,64,0.15);
+}
+
+.firespot-card-image {
+  width: 100px;
+  min-width: 100px;
+  background: #f5ece0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  color: #9c7040;
+}
+
+.firespot-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.firespot-card-body {
+  padding: 0.8rem 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.firespot-card-title { font-size: 0.95rem; font-weight: 600; }
+.firespot-card-desc  { font-size: 0.78rem; color: var(--muted); line-height: 1.45; }
+.firespot-card-tags  { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.1rem; }
+
+/* Fire ban warning banner on detail page */
+.fire-warning {
+  background: #fdf0e0;
+  border: 1px solid #e8c88a;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-size: 0.84rem;
+  color: #7a4a10;
+  line-height: 1.5;
+}
+
+.fire-warning-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+  color: #c07820;
+}
+
+.fire-warning a {
+  color: #7a4a10;
+  font-weight: 600;
+}
+
+/* Always allowed — green confirmation */
+.fire-ok {
+  background: #eaede4;
+  border: 1px solid #c8d4bc;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.84rem;
+  color: #3d5c30;
+}
+
+.fire-ok-icon {
+  font-size: 1.2rem;
+  color: #3d5c30;
+}
+
+/* Badge types for fire spots */
+.badge-official-bbq      { background: #f0e8d8; color: #7a4a10; }
+.badge-official-firepit  { background: #e8ede4; color: #3d5c30; }
+.badge-unofficial        { background: #ede8e0; color: var(--muted); }
+
+/* ── HOME INTRO SECTION ──────────────────────────────────────
+   Sits between the header and the map on index.html.
+   Warm editorial feel — headline + personal paragraph.     */
+
+   .intro-section {
+    padding: 1.8rem 0 0.5rem;
+    max-width: 680px;
+  }
+  
+  .intro-headline {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.25;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.02em;
+  }
+  
+  .intro-body {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.75;
+    margin-bottom: 1.2rem;
+  }
+  
+  .intro-body em {
+    color: var(--ink);
+    font-style: normal;
+    font-weight: 600;
+  }
+  
+  .intro-divider {
+    width: 40px;
+    height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 1.5rem;
+  }
+
+  /* ── CAMP INFO BADGES ────────────────────────────────────────
+   Small badges shown on both list cards and detail pages.  */
+
+.badge-free         { background: #eaede4; color: #3d5c30; }
+.badge-fee          { background: #f0e8d8; color: #7a4a10; }
+.badge-first-come   { background: #e8ede4; color: #3d5c30; }
+.badge-booking      { background: #fdf0e0; color: #7a4a10; }
+.badge-recommended  { background: #f0ece0; color: #6a5a30; }
+.badge-dog          { background: #eaede4; color: #3d5c30; }
+.badge-car          { background: #e4e8ed; color: #2a4a6a; }

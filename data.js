@@ -233,6 +233,10 @@ const HIKES = [
       type: "shelter",
       description: "Open lean-to shelter with fireplace. Fits about 6 people sleeping.",
       facilities: ["fireplace", "water_nearby", "toilet"],
+      fee:           0,
+      booking:       "first_come",
+      dog_friendly:  true,
+      car_accessible: false,
       image: null,
       lat: 59.370,
       lng: 18.020
@@ -243,6 +247,10 @@ const HIKES = [
       type: "campsite",
       description: "Car-accessible campsite with fire rings and a great spot for lake swimming.",
       facilities: ["fireplace", "toilet", "parking", "swimming"],
+      fee:           2,
+      booking:       "recommended",
+      dog_friendly:  true,
+      car_accessible: true,
       image: null,
       lat: 59.260,
       lng: 18.100
@@ -253,8 +261,85 @@ const HIKES = [
       type: "fireplace",
       description: "Designated fire spot inside the national park. Firewood sometimes provided.",
       facilities: ["fireplace", "water_nearby"],
+      fee:           0,
+      booking:       "first_come",
+      dog_friendly:  true,
+      car_accessible: false,
       image: null,
       lat: 59.185,
       lng: 18.265
     }
   ];
+
+  // ── FIRE SPOTS ───────────────────────────────────────────────
+// Standalone fire locations — BBQ areas, fire pits, unofficial spots.
+// Separate from CAMPS which are overnight stays.
+//
+// fire_status values:
+//   "always_allowed"        — designated spot, always ok to use
+//   "check_local_rules"     — check krisinformation.se before lighting
+//   "seasonal_ban_possible" — high risk area, ban likely in dry periods
+//
+// seating:  "benches_and_table" | "benches_only" | "logs" | "none"
+// firewood: "provided" | "buy_nearby" | "bring_own"
+// season:   "year_round" | "summer_only" | "winter_only"
+
+const FIRESPOTS = [
+  {
+    id: "fire-001",
+    name: "Hjälmsätter BBQ Area",
+    type: "official_bbq",
+    description: "Municipal BBQ area with three grill meshes and a great lake view. Popular spot for post-hike cookouts.",
+    fire_status: "always_allowed",
+    seating: "benches_and_table",
+    firewood: "provided",
+    season: "year_round",
+    grill_mesh: true,
+    water_nearby: true,
+    toilet_nearby: true,
+    parking: true,
+    nearby_camps: ["camp-001"],
+    nearby_trails: ["hike-001", "bike-001"],
+    image: null,
+    lat: 59.380,
+    lng: 18.030
+  },
+  {
+    id: "fire-002",
+    name: "Tyresta Fire Ring",
+    type: "official_firepit",
+    description: "Designated fire ring inside the national park. Stone ring with good wind protection. Bring your own wood.",
+    fire_status: "check_local_rules",
+    seating: "logs",
+    firewood: "bring_own",
+    season: "year_round",
+    grill_mesh: false,
+    water_nearby: true,
+    toilet_nearby: false,
+    parking: false,
+    nearby_camps: ["camp-003"],
+    nearby_trails: ["hike-002"],
+    image: null,
+    lat: 59.190,
+    lng: 18.275
+  },
+  {
+    id: "fire-003",
+    name: "Drevviken Shore Spot",
+    type: "unofficial",
+    description: "Well-known local fire spot on the lake shore. No official facilities but used respectfully by locals for years.",
+    fire_status: "seasonal_ban_possible",
+    seating: "none",
+    firewood: "bring_own",
+    season: "summer_only",
+    grill_mesh: false,
+    water_nearby: true,
+    toilet_nearby: false,
+    parking: true,
+    nearby_camps: ["camp-002"],
+    nearby_trails: ["hike-003"],
+    image: null,
+    lat: 59.255,
+    lng: 18.095
+  }
+];
