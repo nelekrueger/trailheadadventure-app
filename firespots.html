@@ -4,7 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fire Spots — Paws & Trails</title>
+
+  <!-- Leaflet CSS and JS — must load before MapLibre bridge -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- MapLibre GL — vector tile renderer for OpenFreeMap -->
+  <link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet"/>
+  <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+
+  <!-- Bridge between Leaflet and MapLibre -->
+  <script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet/leaflet-maplibre-gl.js"></script>
+
+  <!-- Phosphor Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/light/style.css"/>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -25,11 +37,13 @@
   </header>
 
   <main>
+
+    <!-- Overview map — pins for all fire spots -->
     <div id="firespots-map" class="overview-map"></div>
 
+    <!-- Filters — type is single select, features are multi select -->
     <div class="filter-row">
 
-      <!-- Type filter — single select -->
       <div class="filter-bar">
         <span class="filter-label">Type</span>
         <button class="filter-btn active" data-filter="all">All</button>
@@ -44,8 +58,7 @@
         </button>
       </div>
 
-      <!-- Feature filters — multi select -->
-      <div class="filter-bar" id="feature-filters">
+      <div class="filter-bar">
         <span class="filter-label">Features</span>
         <button class="filter-btn bracket" data-feature="seating">
           <i class="ph-light ph-park"></i> With seating
@@ -60,11 +73,14 @@
 
     </div>
 
+    <!-- Fire spot cards — rendered by buildFirespotsPage() in app.js -->
     <div class="items-list" id="items-list"></div>
+
   </main>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- data.js must load before app.js -->
   <script src="data.js"></script>
   <script src="app.js"></script>
+
 </body>
 </html>

@@ -160,13 +160,55 @@
   .filter-btn.active {
     border-color: transparent;
     color: white;
+    background: var(--muted);
   }
   
-  .map-section .filter-btn.active[data-category="hikes"]     { background: var(--hike); }
-  .map-section .filter-btn.active[data-category="bikes"]     { background: var(--bike); }
-  .map-section .filter-btn.active[data-category="cafes"]     { background: var(--cafe); }
-  .map-section .filter-btn.active[data-category="camps"]     { background: var(--camp); }
-  .map-section .filter-btn.active[data-category="firespots"] { background: var(--firespot); }
+  body.page-hikes .filter-btn.active,
+.map-section .filter-btn.active[data-category="hikes"] {
+  background: var(--hike);
+  color: white;
+  border-color: transparent;
+}
+
+body.page-bikes .filter-btn.active,
+.map-section .filter-btn.active[data-category="bikes"] {
+  background: var(--bike);
+  color: white;
+  border-color: transparent;
+}
+
+body.page-cafes .filter-btn.active,
+.map-section .filter-btn.active[data-category="cafes"] {
+  background: var(--cafe);
+  color: white;
+  border-color: transparent;
+}
+
+body.page-camps .filter-btn.active,
+.map-section .filter-btn.active[data-category="camps"] {
+  background: var(--camp);
+  color: white;
+  border-color: transparent;
+}
+
+body.page-firespots .filter-btn.active,
+.map-section .filter-btn.active[data-category="firespots"] {
+  background: var(--firespot);
+  color: white;
+  border-color: transparent;
+}
+
+body.page-hikes .filter-btn.bracket.active {
+  background: rgba(92,122,78,0.12);
+  border-color: var(--hike);
+  color: var(--hike);
+}
+
+body.page-bikes .filter-btn.bracket.active {
+  background: rgba(74,122,138,0.12);
+  border-color: var(--bike);
+  color: var(--bike);
+}
   
   /* ── OVERVIEW MAP (sub-pages) ────────────────────────────────*/
   .overview-map {

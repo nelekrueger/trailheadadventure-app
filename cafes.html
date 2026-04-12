@@ -4,11 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cafes & Restaurants — Paws & Trails</title>
+
+  <!-- Leaflet CSS and JS — must load before MapLibre bridge -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- MapLibre GL — vector tile renderer for OpenFreeMap -->
+  <link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet"/>
+  <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+
+  <!-- Bridge between Leaflet and MapLibre -->
+  <script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet/leaflet-maplibre-gl.js"></script>
+
+  <!-- Phosphor Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/light/style.css"/>
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="page-cafes">
+
   <header>
     <div class="header-inner">
       <a href="index.html" class="back-btn">
@@ -22,8 +35,13 @@
       <span class="header-count" id="page-count"></span>
     </div>
   </header>
+
   <main>
+
+    <!-- Overview map — pins for all cafes and restaurants -->
     <div id="cafes-map" class="overview-map"></div>
+
+    <!-- Type filter — single select -->
     <div class="filter-bar">
       <span class="filter-label">Type</span>
       <button class="filter-btn active" data-filter="all">All</button>
@@ -31,10 +49,15 @@
       <button class="filter-btn" data-filter="restaurant">Restaurants</button>
       <button class="filter-btn" data-filter="bar">Bars</button>
     </div>
+
+    <!-- Cafe cards — rendered by buildCafesPage() in app.js -->
     <div class="items-list" id="items-list"></div>
+
   </main>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- data.js must load before app.js -->
   <script src="data.js"></script>
   <script src="app.js"></script>
+
 </body>
 </html>

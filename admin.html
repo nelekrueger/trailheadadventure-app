@@ -4,8 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin — Paws & Trails</title>
+
+  <!-- Leaflet CSS and JS — must load before MapLibre bridge -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- MapLibre GL — vector tile renderer for OpenFreeMap -->
+  <link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet"/>
+  <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+
+  <!-- Bridge between Leaflet and MapLibre -->
+  <script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet/leaflet-maplibre-gl.js"></script>
+
+  <!-- Phosphor Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/light/style.css"/>
+
   <style>
     /* ── RESET & BASE ────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -291,16 +304,6 @@
       color: white;
     }
 
-    #picker-map {
-      width: 100%;
-      height: 260px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      display: none;
-    }
-
-    #picker-map.visible { display: block; }
-
     .coords-manual {
       display: flex;
       gap: 0.5rem;
@@ -408,6 +411,18 @@
 
     .generate-btn.visible { display: block; }
     .generate-btn:hover { opacity: 0.88; }
+
+    /* ── PICKER MAPS ─────────────────────────────────────────── */
+    .picker-map {
+      width: 100%;
+      height: 260px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      display: none;
+      margin-top: 0.3rem;
+    }
+
+    .picker-map.visible { display: block; }
 
     /* ── RESPONSIVE ──────────────────────────────────────────── */
     @media (max-width: 560px) {
@@ -586,7 +601,7 @@
         </div>
       </div>
 
-      <!-- Location picker -->
+      <!-- Start point location picker -->
       <div class="field">
         <label>Start point location</label>
         <div class="location-tabs">
@@ -604,11 +619,11 @@
         <div class="coords-manual" id="rcoords-manual" style="display:none">
           <div class="field" style="flex:1">
             <label>Latitude</label>
-            <input type="text" id="r-lat" placeholder="59.295">
+            <input type="text" id="r-lat" placeholder="57.930">
           </div>
           <div class="field" style="flex:1">
             <label>Longitude</label>
-            <input type="text" id="r-lng" placeholder="18.140">
+            <input type="text" id="r-lng" placeholder="12.620">
           </div>
         </div>
       </div>
@@ -631,11 +646,11 @@
         <div class="coords-manual" id="pcoords-manual" style="display:none">
           <div class="field" style="flex:1">
             <label>Parking lat</label>
-            <input type="text" id="p-lat" placeholder="59.295">
+            <input type="text" id="p-lat" placeholder="57.930">
           </div>
           <div class="field" style="flex:1">
             <label>Parking lng</label>
-            <input type="text" id="p-lng" placeholder="18.140">
+            <input type="text" id="p-lng" placeholder="12.620">
           </div>
         </div>
       </div>
@@ -743,11 +758,11 @@
         <div class="coords-manual" id="ccoords-manual" style="display:none">
           <div class="field" style="flex:1">
             <label>Latitude</label>
-            <input type="text" id="c-lat" placeholder="59.320">
+            <input type="text" id="c-lat" placeholder="57.930">
           </div>
           <div class="field" style="flex:1">
             <label>Longitude</label>
-            <input type="text" id="c-lng" placeholder="18.050">
+            <input type="text" id="c-lng" placeholder="12.620">
           </div>
         </div>
       </div>
@@ -869,11 +884,11 @@
         <div class="coords-manual" id="cacoords-manual" style="display:none">
           <div class="field" style="flex:1">
             <label>Latitude</label>
-            <input type="text" id="ca-lat" placeholder="59.370">
+            <input type="text" id="ca-lat" placeholder="57.930">
           </div>
           <div class="field" style="flex:1">
             <label>Longitude</label>
-            <input type="text" id="ca-lng" placeholder="18.020">
+            <input type="text" id="ca-lng" placeholder="12.620">
           </div>
         </div>
       </div>
@@ -950,7 +965,7 @@
             <i class="ph-light ph-drop"></i> Water nearby
           </label>
           <label class="toggle-item" onclick="toggleItem(this)">
-            <input type="checkbox" name="ca-fac" value="toilet_nearby">
+            <input type="checkbox" name="f-fac" value="toilet_nearby">
             <i class="ph-light ph-toilet-paper"></i> Toilet nearby
           </label>
           <label class="toggle-item" onclick="toggleItem(this)">
@@ -1005,11 +1020,11 @@
         <div class="coords-manual" id="fcoords-manual" style="display:none">
           <div class="field" style="flex:1">
             <label>Latitude</label>
-            <input type="text" id="f-lat" placeholder="59.370">
+            <input type="text" id="f-lat" placeholder="57.930">
           </div>
           <div class="field" style="flex:1">
             <label>Longitude</label>
-            <input type="text" id="f-lng" placeholder="18.020">
+            <input type="text" id="f-lng" placeholder="12.620">
           </div>
         </div>
       </div>
@@ -1033,7 +1048,7 @@
   </main>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- data.js must load before the admin script -->
 <script src="data.js"></script>
 <script>
 // ── PASSWORD ──────────────────────────────────────────────────
@@ -1057,9 +1072,9 @@ function checkPassword() {
 
 
 // ── STATE ─────────────────────────────────────────────────────
-let activeCategory = null;
-const pickerMaps   = {}; // stores Leaflet map instances per prefix
-const pickerMarkers = {}; // stores current markers per prefix
+let activeCategory  = null;
+const pickerMaps    = {}; // Leaflet map instances keyed by prefix
+const pickerMarkers = {}; // current pin markers keyed by prefix
 
 
 // ── INIT ──────────────────────────────────────────────────────
@@ -1070,22 +1085,6 @@ function initAdmin() {
   populateCampsList('r-camps-list');
   populateCampsList('f-camps-list');
   populateTrailsList('f-trails-list');
-
-  // Add style for picker maps
-  const style = document.createElement('style');
-  style.textContent = `
-    .picker-map {
-      width: 100%;
-      height: 260px;
-      border-radius: 8px;
-      border: 1px solid #dedad0;
-      display: none;
-      margin-top: 0.3rem;
-    }
-    .picker-map.visible { display: block; }
-    .map-hint.visible { display: block; }
-  `;
-  document.head.appendChild(style);
 }
 
 
@@ -1127,7 +1126,7 @@ function selectCategory(cat) {
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`.cat-btn.${cat}`).classList.add('active');
 
-  // Hide all forms
+  // Hide all forms except the category selector
   document.querySelectorAll('.form-card').forEach(f => {
     if (!f.id.startsWith('form-') && f.querySelector('.cat-grid')) return;
     f.classList.remove('visible');
@@ -1151,10 +1150,8 @@ function selectCategory(cat) {
       cat === 'hikes' ? 'Hike details' : 'Bike route details';
   }
 
-  // Show generate button
+  // Show generate button and hide output
   document.getElementById('generate-btn').classList.add('visible');
-
-  // Hide output
   document.getElementById('output-card').classList.remove('visible');
 }
 
@@ -1205,24 +1202,23 @@ function switchLocTab(prefix, mode) {
 
 
 // ── PICKER MAP ────────────────────────────────────────────────
-// Initialises a Leaflet map for clicking to set coordinates.
+// Initialises a Leaflet + OpenFreeMap map for clicking coordinates.
 // Only initialised once per prefix — reuses on subsequent opens.
 
 function initPickerMap(prefix) {
   if (pickerMaps[prefix]) {
-    // Already initialised — just invalidate size in case it was hidden
     setTimeout(() => pickerMaps[prefix].invalidateSize(), 100);
     return;
   }
 
   const map = L.map(`picker-map-${prefix}`, {
-    center: [59.295, 18.140],
-    zoom: 11
+    center: [57.930, 12.620], // Alingsås
+    zoom: 12
   });
 
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    maxZoom: 19
+  L.maplibreGL({
+    style: 'https://tiles.openfreemap.org/styles/liberty',
+    attribution: 'OpenFreeMap © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(map);
 
   // Click to place/move marker and fill lat/lng fields
@@ -1231,20 +1227,17 @@ function initPickerMap(prefix) {
     const latRounded   = Math.round(lat * 100000) / 100000;
     const lngRounded   = Math.round(lng * 100000) / 100000;
 
-    // Set the hidden manual fields so generate() can read them
     const latField = document.getElementById(`${prefix}-lat`);
     const lngField = document.getElementById(`${prefix}-lng`);
     if (latField) latField.value = latRounded;
     if (lngField) lngField.value = lngRounded;
 
-    // Move or create the marker
     if (pickerMarkers[prefix]) {
       pickerMarkers[prefix].setLatLng([lat, lng]);
     } else {
       pickerMarkers[prefix] = L.marker([lat, lng]).addTo(map);
     }
 
-    // Hide the hint
     const hint = document.getElementById(`${prefix}hint-map`);
     if (hint) hint.classList.remove('visible');
   });
@@ -1254,14 +1247,13 @@ function initPickerMap(prefix) {
 }
 
 
-// ── FILE PATH ────────────────────────────────────────────────
+// ── FILE PATH ─────────────────────────────────────────────────
 // When a file is picked, sets the text field to the correct
 // relative path for data.js (e.g. "assets/my-photo.jpg")
 
 function setFilePath(fieldId, input, folder) {
   if (input.files && input.files[0]) {
-    const filename = input.files[0].name;
-    document.getElementById(fieldId).value = folder + filename;
+    document.getElementById(fieldId).value = folder + input.files[0].name;
   }
 }
 
@@ -1286,9 +1278,9 @@ function getChecked(name) {
 }
 
 
-// ── FORMAT VALUE ─────────────────────────────────────────────
-// Formats a value for the output snippet.
-// Strings get quotes, null/numbers/booleans are bare.
+// ── FORMAT HELPERS ────────────────────────────────────────────
+// fmt()    — wraps strings in quotes, passes null/bool/number bare
+// fmtArr() — formats a string array for data.js output
 
 function fmt(val) {
   if (val === null || val === undefined || val === '') return 'null';
@@ -1304,7 +1296,7 @@ function fmtArr(arr) {
 
 
 // ── GENERATE SNIPPET ─────────────────────────────────────────
-// Reads all form values and builds the data.js snippet string.
+// Reads all form values and builds the paste-ready data.js snippet.
 
 function generateSnippet() {
   let snippet = '';
@@ -1322,34 +1314,34 @@ function generateSnippet() {
     const pLng     = document.getElementById('p-lng').value;
 
     snippet = `{
-  id:             "${id}",
-  name:           ${fmt(document.getElementById('r-name').value)},
-  distance_km:    ${parseFloat(document.getElementById('r-distance').value) || 0},
-  elevation_m:    ${parseInt(document.getElementById('r-elevation').value) || 0},
-  difficulty:     "${document.getElementById('r-difficulty').value}",
-  surface:        "${document.getElementById('r-surface').value}",
-  official_trail: ${official},
-  trail_name:     ${official ? fmt(document.getElementById('r-trail-name').value) : 'null'},
-  trail_markers:  ${official ? fmt(document.getElementById('r-trail-markers').value) : 'null'},
-  description:    ${fmt(document.getElementById('r-description').value)},
-  good_to_know:   ${fmt(document.getElementById('r-goodtoknow').value)},
-  gpx_file:       ${fmt(document.getElementById('r-gpx').value)},
-  image:          ${fmt(document.getElementById('r-image').value)},
+  id:              "${id}",
+  name:            ${fmt(document.getElementById('r-name').value)},
+  distance_km:     ${parseFloat(document.getElementById('r-distance').value) || 0},
+  elevation_m:     ${parseInt(document.getElementById('r-elevation').value) || 0},
+  difficulty:      "${document.getElementById('r-difficulty').value}",
+  surface:         "${document.getElementById('r-surface').value}",
+  official_trail:  ${official},
+  trail_name:      ${official ? fmt(document.getElementById('r-trail-name').value) : 'null'},
+  trail_markers:   ${official ? fmt(document.getElementById('r-trail-markers').value) : 'null'},
+  description:     ${fmt(document.getElementById('r-description').value)},
+  good_to_know:    ${fmt(document.getElementById('r-goodtoknow').value)},
+  gpx_file:        ${fmt(document.getElementById('r-gpx').value)},
+  image:           ${fmt(document.getElementById('r-image').value)},
   shelters_nearby: ${fmtArr(getChecked('r-camps-list'))},
-  parking_lat:    ${pLat ? parseFloat(pLat) : 'null'},
-  parking_lng:    ${pLng ? parseFloat(pLng) : 'null'},
-  parking_note:   ${fmt(document.getElementById('r-parking-note').value)},
-  lat:            ${lat ? parseFloat(lat) : 0},
-  lng:            ${lng ? parseFloat(lng) : 0}
+  parking_lat:     ${pLat ? parseFloat(pLat) : 'null'},
+  parking_lng:     ${pLng ? parseFloat(pLng) : 'null'},
+  parking_note:    ${fmt(document.getElementById('r-parking-note').value)},
+  lat:             ${lat ? parseFloat(lat) : 0},
+  lng:             ${lng ? parseFloat(lng) : 0}
 },`;
 
   } else if (cat === 'cafes') {
-    const id      = nextId('cafe', CAFES);
-    const feats   = getChecked('c-feat');
-    const menu    = document.getElementById('c-menu').value
-                      .split('\n').map(s => s.trim()).filter(Boolean);
-    const lat     = document.getElementById('c-lat').value;
-    const lng     = document.getElementById('c-lng').value;
+    const id    = nextId('cafe', CAFES);
+    const feats = getChecked('c-feat');
+    const menu  = document.getElementById('c-menu').value
+                    .split('\n').map(s => s.trim()).filter(Boolean);
+    const lat   = document.getElementById('c-lat').value;
+    const lng   = document.getElementById('c-lng').value;
 
     snippet = `{
   id:              "${id}",
@@ -1393,33 +1385,32 @@ function generateSnippet() {
 },`;
 
   } else if (cat === 'firespots') {
-    const id    = nextId('fire', FIRESPOTS);
-    const facs  = getChecked('f-fac');
-    const lat   = document.getElementById('f-lat').value;
-    const lng   = document.getElementById('f-lng').value;
+    const id   = nextId('fire', FIRESPOTS);
+    const facs = getChecked('f-fac');
+    const lat  = document.getElementById('f-lat').value;
+    const lng  = document.getElementById('f-lng').value;
 
     snippet = `{
-  id:             "${id}",
-  name:           ${fmt(document.getElementById('f-name').value)},
-  type:           "${document.getElementById('f-type').value}",
-  description:    ${fmt(document.getElementById('f-description').value)},
-  fire_status:    "${document.getElementById('f-status').value}",
-  seating:        "${document.getElementById('f-seating').value}",
-  firewood:       "${document.getElementById('f-firewood').value}",
-  season:         "${document.getElementById('f-season').value}",
-  grill_mesh:     ${facs.includes('grill_mesh')},
-  water_nearby:   ${facs.includes('water_nearby')},
-  toilet_nearby:  ${facs.includes('toilet_nearby')},
-  parking:        ${facs.includes('parking')},
-  nearby_camps:   ${fmtArr(getChecked('f-camps-list'))},
-  nearby_trails:  ${fmtArr(getChecked('f-trails-list'))},
-  image:          ${fmt(document.getElementById('f-image').value)},
-  lat:            ${lat ? parseFloat(lat) : 0},
-  lng:            ${lng ? parseFloat(lng) : 0}
+  id:            "${id}",
+  name:          ${fmt(document.getElementById('f-name').value)},
+  type:          "${document.getElementById('f-type').value}",
+  description:   ${fmt(document.getElementById('f-description').value)},
+  fire_status:   "${document.getElementById('f-status').value}",
+  seating:       "${document.getElementById('f-seating').value}",
+  firewood:      "${document.getElementById('f-firewood').value}",
+  season:        "${document.getElementById('f-season').value}",
+  grill_mesh:    ${facs.includes('grill_mesh')},
+  water_nearby:  ${facs.includes('water_nearby')},
+  toilet_nearby: ${facs.includes('toilet_nearby')},
+  parking:       ${facs.includes('parking')},
+  nearby_camps:  ${fmtArr(getChecked('f-camps-list'))},
+  nearby_trails: ${fmtArr(getChecked('f-trails-list'))},
+  image:         ${fmt(document.getElementById('f-image').value)},
+  lat:           ${lat ? parseFloat(lat) : 0},
+  lng:           ${lng ? parseFloat(lng) : 0}
 },`;
   }
 
-  // Show output
   const arrayName = {
     hikes: 'HIKES', bikes: 'BIKES',
     cafes: 'CAFES', camps: 'CAMPS',
@@ -1433,7 +1424,6 @@ function generateSnippet() {
   outputCard.classList.add('visible');
   outputCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-  // Reset copy button
   const copyBtn = document.getElementById('copy-btn');
   copyBtn.classList.remove('copied');
   copyBtn.innerHTML = '<i class="ph-light ph-copy"></i> Copy to clipboard';

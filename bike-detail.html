@@ -4,23 +4,42 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bike Route — Paws & Trails</title>
+
+  <!-- Leaflet CSS and JS — must load before MapLibre bridge -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- MapLibre GL — vector tile renderer for OpenFreeMap -->
+  <link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet"/>
+  <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+
+  <!-- Bridge between Leaflet and MapLibre -->
+  <script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet/leaflet-maplibre-gl.js"></script>
+
+  <!-- Phosphor Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/light/style.css"/>
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="page-bikes">
+
   <header>
     <div class="header-inner">
-      <a href="bikes.html" class="back-btn">←</a>
+      <a href="bikes.html" class="back-btn">
+        <i class="ph-light ph-arrow-left"></i>
+      </a>
       <div class="header-text">
+        <!-- Title filled in by buildRouteDetailPage() in app.js -->
         <div class="logo" id="detail-title">Loading...</div>
       </div>
     </div>
   </header>
+
+  <!-- All detail content injected here by buildRouteDetailPage() in app.js -->
   <main id="detail-main"></main>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/light/style.css"/>
+  <!-- data.js must load before app.js -->
   <script src="data.js"></script>
   <script src="app.js"></script>
+
 </body>
 </html>

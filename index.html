@@ -4,7 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Paws & Trails</title>
+
+  <!-- Leaflet CSS and JS — must load before MapLibre bridge -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- MapLibre GL — vector tile renderer for OpenFreeMap -->
+  <link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet"/>
+  <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+
+  <!-- Bridge between Leaflet and MapLibre -->
+  <script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet/leaflet-maplibre-gl.js"></script>
+
   <!-- Phosphor Icons — light weight, free, no license required -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/light/style.css"/>
   <link rel="stylesheet" href="style.css">
@@ -18,39 +29,40 @@
           <i class="ph-light ph-paw-print"></i>
           Paws & Trails
         </div>
+        <p class="tagline">Adventures in and around Alingsås, Sweden</p>
       </div>
     </div>
   </header>
 
   <main>
 
-    <main>
+    <!-- ── INTRO ──────────────────────────────────────────────
+         Personal introduction shown only on the home page.
+         Sits above the map and category cards.
+    ──────────────────────────────────────────────────────── -->
+    <section class="intro-section">
+      <h1 class="intro-headline">
+        The adventure guide to Alingsås that didn't exist,<br>
+        so we made it.
+      </h1>
+      <p class="intro-body">
+        Trails, gravel routes, fire spots, shelters, camp sites and good coffee stops,
+        all handpicked by <em>a German who made Alingsås home</em>, and her four-legged co-explorer.
+        We moved here, got wonderfully lost a few times, and decided to put everything
+        we found on one map. Hike it, ride it, sit by a fire, grab a fika.
+      </p>
+      <p class="intro-body">
+        <em>New spots get added as we explore.</em>
+      </p>
+      <div class="intro-divider"></div>
+    </section>
 
-      <!-- ── INTRO ───────────────────────────────────────────────
-           Personal introduction — shown only on the home page.
-           Sits above the map and category cards.
-      ──────────────────────────────────────────────────────── -->
-      <section class="intro-section">
-        <h1 class="intro-headline">Adventures in and around Alingsås, Sweden</h1>
-        <p class="intro-body">
-          Trails, gravel routes, fire spots, shelters, camp sites and good coffee stops,
-          all handpicked by <em>a German who made Alingsås home</em>, and her four-legged co-explorer.
-          We moved here, got wonderfully lost a few times, and decided to put everything
-          we found on one map. Hike it, ride it, sit by a fire, grab a fika.
-        </p>
-        <p class="intro-body">
-          <em>New spots get added as we explore.</em>
-        </p>
-        <div class="intro-divider"></div>
-      </section>
-    
-      <!-- ── MAP SECTION ─────────────────────────────────────── -->
-      <section class="map-section">
-    
-      <!-- ── MAP SECTION ─────────────────────────────────────── -->
-      <section class="map-section">
-
+    <!-- ── MAP SECTION ────────────────────────────────────────
+         Full-width map showing all five categories at once.
+         Filter buttons above toggle each layer on/off.
+    ──────────────────────────────────────────────────────── -->
     <section class="map-section">
+
       <!-- Filter toggles — data-category matches layer keys in app.js -->
       <div class="filter-bar">
         <button class="filter-btn active" data-category="hikes">
@@ -65,7 +77,6 @@
         <button class="filter-btn active" data-category="camps">
           <i class="ph-light ph-tent"></i> Camps
         </button>
-        <!-- New fire spots toggle -->
         <button class="filter-btn active" data-category="firespots">
           <i class="ph-light ph-flame"></i> Fire spots
         </button>
@@ -73,14 +84,19 @@
 
       <!-- Map rendered by buildHomePage() in app.js -->
       <div id="map"></div>
+
     </section>
 
+    <!-- ── CATEGORY CARDS ─────────────────────────────────────
+         Five clickable cards linking to each sub-page.
+         Counts are filled in by buildHomePage() in app.js.
+    ──────────────────────────────────────────────────────── -->
     <section class="categories-section">
       <h2>Browse by category</h2>
       <div class="category-grid">
 
         <a href="hikes.html" class="category-card hikes">
-          <i class="ph-light ph-boot cat-icon"></i>
+          <i class="ph-light ph-sneaker cat-icon"></i>
           <span class="cat-name">Hikes & trail runs</span>
           <span class="cat-count" id="count-hikes">— routes</span>
         </a>
@@ -114,8 +130,9 @@
 
   </main>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Scripts — data.js must load before app.js -->
   <script src="data.js"></script>
   <script src="app.js"></script>
+
 </body>
 </html>

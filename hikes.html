@@ -4,11 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hikes & Trail Runs — Paws & Trails</title>
+
+  <!-- Leaflet CSS and JS — must load before MapLibre bridge -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- MapLibre GL — vector tile renderer for OpenFreeMap -->
+  <link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet"/>
+  <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+
+  <!-- Bridge between Leaflet and MapLibre -->
+  <script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet/leaflet-maplibre-gl.js"></script>
+
+  <!-- Phosphor Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/light/style.css"/>
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="page-hikes">
+
   <header>
     <div class="header-inner">
       <a href="index.html" class="back-btn">
@@ -22,11 +35,15 @@
       <span class="header-count" id="page-count"></span>
     </div>
   </header>
+
   <main>
+
+    <!-- Overview map — pins for all hikes, click pin to scroll to card -->
     <div id="hikes-map" class="overview-map"></div>
+
+    <!-- Filters — difficulty is single select, distance is multi select -->
     <div class="filter-row">
 
-      <!-- Difficulty — single select -->
       <div class="filter-bar">
         <span class="filter-label">Difficulty</span>
         <button class="filter-btn active" data-filter="all">All</button>
@@ -34,11 +51,10 @@
         <button class="filter-btn" data-filter="medium">Medium</button>
         <button class="filter-btn" data-filter="hard">Hard</button>
       </div>
-    
-      <!-- Distance brackets — multi select -->
-      <div class="filter-bar" id="distance-filters">
+
+      <div class="filter-bar">
         <span class="filter-label">Distance</span>
-        <button class="filter-btn bracket" data-min="0"  data-max="10">
+        <button class="filter-btn bracket" data-min="0" data-max="10">
           <i class="ph-light ph-ruler"></i> Under 10 km
         </button>
         <button class="filter-btn bracket" data-min="10" data-max="20">
@@ -51,12 +67,17 @@
           35 km+
         </button>
       </div>
-    
+
     </div>
+
+    <!-- Route cards — rendered by buildHikesPage() in app.js -->
     <div class="items-list" id="items-list"></div>
+
   </main>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- data.js must load before app.js -->
   <script src="data.js"></script>
   <script src="app.js"></script>
+
 </body>
 </html>
